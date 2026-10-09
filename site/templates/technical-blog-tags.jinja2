@@ -10,6 +10,22 @@
     <link rel="stylesheet" href="/templates/technical-blog.css">
     <link rel="stylesheet" href="/templates/technical-blog-tags.css">
     <link rel="stylesheet" href="/themes/{{ config.default_theme or config.theme or 'dracula' }}.css" id="theme-stylesheet">
+    {% if config.content_assets %}
+    <style>
+        @font-face {
+            font-family: 'Fira Code';
+            src: url('{{ config.content_assets.fira_code }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Saira';
+            src: url('{{ config.content_assets.saira }}') format('truetype');
+            font-weight: 100 900;
+            font-style: normal;
+        }
+    </style>
+    {% endif %}
 </head>
 <body>
     <nav class="nav">
