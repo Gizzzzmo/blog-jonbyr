@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    builder.url = "github:Gizzzzmo/website";
+    builder.url = "git+ssh://git@github.com/Gizzzzmo/website.git";
   };
 
   outputs = {
