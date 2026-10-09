@@ -26,8 +26,7 @@
           dontUnpack = true;
           nativeBuildInputs = [ site-builder ];
           buildPhase = ''
-            site-builder "$src" --output $out --offline \
-              -i README.md -i flake.nix -i flake.lock -i Makefile -i .gitignore
+            site-builder "$src/site" --output $out --offline
           '';
           installPhase = "true";
         };
