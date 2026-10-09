@@ -1,0 +1,228 @@
+:root {
+    --background: #282828;
+    --background-elevated: #3c3836;
+    --foreground: #ebdbb2;
+    --foreground-dim: #928374;
+    
+    --cyan: #8ec07c;
+    --green: #b8bb26;
+    --yellow: #fabd2f;
+    --orange: #fe8019;
+    --pink: #d3869b;
+    --purple: #d3869b;
+    
+    --bg: #3c3836;
+    --fg: #ebdbb2;
+    --fg-dim: #928374;
+    --red: #fb4934;
+    --green: #b8bb26;
+    --yellow: #fabd2f;
+    --yellow-bright: #fabd2f;
+    --orange: #fe8019;
+    --orange-bright: #fe8019;
+    --aqua: #8ec07c;
+    --purple: #d3869b;
+    --comment: #928374;
+    --punctuation: #a89984;
+
+    --main-highlight: var(--red);
+    --second-highlight: var(--orange);
+    --third-highlight: var(--yellow-bright);
+    
+    --good: var(--green);
+    --bad: var(--red);
+}
+
+/* ===== Standard tree-sitter CLI classes ===== */
+.code { background-color: var(--bg); }
+.code .line { color: var(--fg); }
+.code .line-number { color: var(--fg-dim); }
+.code .attribute { font-style: italic; color: var(--green); }
+.code .comment { font-style: italic; color: var(--comment); }
+.code .constant { color: var(--purple); }
+.code .constant.builtin { font-weight: bold; color: var(--purple); }
+.code .constructor { color: var(--green); }
+.code .function { color: var(--third-highlight); }
+.code .function.builtin { font-weight: bold; color: var(--yellow-bright); }
+.code .keyword { color: var(--main-highlight); }
+.code .module { color: var(--green); }
+.code .number { font-weight: bold; color: var(--purple); }
+.code .operator { font-weight: bold; color: var(--red); }
+.code .property { color: var(--yellow); }
+.code .property.builtin { font-weight: bold; color: var(--yellow); }
+.code .punctuation { color: var(--punctuation); }
+.code .punctuation.bracket { color: var(--punctuation); }
+.code .punctuation.delimiter { color: var(--punctuation); }
+.code .punctuation.special { color: var(--punctuation); }
+.code .string { color: var(--yellow); }
+.code .string.special { color: #b8bb26; }
+.code .tag { color: var(--yellow); }
+.code .type { color: var(--second-highlight); }
+.code .type.builtin { font-weight: bold; color: var(--orange); }
+.code .variable { color: #ebdbb2; }
+.code .variable.builtin { font-weight: bold; color: var(--orange-bright); }
+.code .variable.parameter { text-decoration: underline; color: var(--aqua); }
+
+/* ===== Custom tree-sitter highlighter classes ===== */
+.ts-code {
+    background-color: var(--bg);
+    color: var(--fg);
+    line-height: 1.5;
+}
+
+/* Keywords - uniform styling for all languages */
+.ts-keyword {
+    color: var(--main-highlight);
+    font-weight: bold;
+}
+
+.ts-code [class*="opcode"] {
+    color: var(--main-highlight);
+}
+
+/* Lighter keywords */
+[class*="-ts-token-in"],
+[class*="-ts-token-as"],
+[class*="-ts-token-is"] {
+    font-weight: normal;
+}
+
+/* Types */
+[class^="ts-primitive_type"],
+[class*="-ts-primitive_type"] {
+    color: var(--second-highlight);
+    font-style: italic;
+}
+
+/* Literals */
+[class^="ts-integer"],
+[class^="ts-float"],
+[class^="ts-true"],
+[class^="ts-false"] {
+    color: var(--purple);
+    font-weight: bold;
+}
+
+.ts-constant,
+.ts-number_literal {
+    color: var(--purple);
+    font-weight: bold;
+}
+
+.ts-directive,
+.ts-type_identifier {
+    color: var(--second-highlight);
+}
+
+[class^="ts-string_start"],
+[class^="ts-string_end"],
+[class*="-ts-string_start"],
+[class*="-ts-string_end"] {
+    color: var(--yellow);
+    font-weight: bold;
+}
+
+[class^="ts-string-"],
+[class^="ts-string_"] {
+    color: var(--yellow);
+}
+
+/* Function definitions */
+[class*="ts-identifier-"][class*="-parent-function_definition"],
+[class*="ts-identifier-"][class*="-parent-function_declarator"] {
+    color: var(--third-highlight);
+    font-weight: bold;
+    font-style: normal;
+}
+
+/* Function calls */
+[class*="ts-identifier-"][class*="-parent-call"] {
+    color: var(--green);
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Parameters - key feature! */
+[class*="ts-identifier-"][class*="-parent-parameters"],
+[class*="ts-identifier-"][class*="-parent-default_parameter"],
+[class*="ts-identifier-"][class*="-parent-parameter_declaration"] {
+    color: var(--aqua);
+    font-weight: normal;
+}
+
+/* Regular variables */
+[class*="ts-identifier-"][class*="-parent-argument_list"],
+[class*="ts-identifier-"][class*="-parent-interpolation"],
+[class*="ts-identifier-"][class*="-parent-binary_expression"],
+[class*="ts-identifier-"][class*="-parent-for_statement"],
+[class*="ts-identifier-"][class*="-parent-return_statement"],
+[class*="ts-identifier-"][class*="-parent-init_declarator"] {
+    color: var(--fg);
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Default identifier */
+[class^="ts-identifier"] {
+    color: var(--fg);
+}
+
+/* Parameter references - must come AFTER default identifier */
+.ts-param-ref {
+    color: var(--aqua);
+    font-weight: normal;
+}
+
+/* Comments */
+[class^="ts-comment"],
+[class^="ts-line_comment"],
+[class^="ts-block_comment"] {
+    color: var(--comment);
+    font-style: italic;
+}
+
+/* Preprocessor */
+[class*="preproc"] {
+    color: var(--red);
+}
+
+/* Display fixes */
+[class^="ts-function_definition"],
+[class^="ts-function_declarator"],
+[class^="ts-block"],
+[class^="ts-compound_statement"],
+[class^="ts-parameters"],
+[class^="ts-parameter_list"],
+[class^="ts-argument_list"],
+[class^="ts-call"],
+[class^="ts-for_statement"],
+[class^="ts-return_statement"],
+[class^="ts-default_parameter"],
+[class^="ts-interpolation"],
+[class^="ts-string"] {
+    display: inline;
+}
+
+/* Anonymous tokens fallback */
+:not(.ts-string_literal) > [class^="ts-anonymous"] {
+    color: var(--fg);
+}
+
+.ts-system_lib_string,
+.ts-string_literal,
+[class^="ts-string_content"],
+[class*="-ts-string_content"] {
+    color: var(--yellow);
+}
+
+.ts-parent-macro_invocation {
+    color: var(--punctuation);
+}
+
+:not(.ts-string_literal) > .ts-token---, :not(.ts-string_literal) > .ts-token-- {
+    color: var(--punctuation);
+}
+
+.ts-command_name {
+    color: var(--orange);
+}

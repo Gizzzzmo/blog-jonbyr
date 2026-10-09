@@ -1,0 +1,206 @@
+.theme-selector { display: none; }
+.theme-selector.visible { display: block; }
+
+.article-title::after {
+    transition: width 0.3s ease, transform 0.3s ease;
+}
+
+.article-preview {
+    margin-bottom: 4.5rem;
+    border-bottom: 1px solid var(--foreground-dim, #333);
+}
+
+.article-preview .article-tags {
+    margin-top: var(--spacing-sm);
+}
+
+.article-preview:last-child {
+    border-bottom: none;
+}
+
+.preview-content {
+    margin-top: 0.5rem;
+    max-height: 130px;
+    overflow: hidden;
+    position: relative;
+    opacity: 0.9;
+}
+
+/* Imported article links are meaningless in feed context (relative and
+   fragment hrefs resolve against the feed page, not the article), so make
+   them fully inert to the mouse: no click, no hover styles, no pointer
+   cursor. Exempts .preview-fade-link, the click-through overlay to the
+   full article, which must stay interactive. */
+.preview-content a:not(.preview-fade-link) {
+    pointer-events: none;
+}
+
+/* Citations carry their own clickable affordance on the wrapping span
+   (cursor + hover color/lift), independent of the inner anchor, so
+   neutralize that too inside previews. */
+.preview-content .citation {
+    cursor: default;
+    color: inherit;
+}
+
+.preview-content .citation:hover {
+    color: inherit;
+    transform: none;
+}
+
+.preview-fade-link {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom, transparent, var(--background-elevated, #282a36));
+    display: block;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.preview-fade-link:hover {
+    opacity: 0.9;
+}
+
+.article-preview:hover .article-title::after {
+    width: 80%;
+    transform: skewX(-40deg);
+}
+
+.preview-link {
+    text-decoration: none !important;
+    color: inherit !important;
+    border-bottom: none !important;
+}
+
+.main {
+    padding-top: 2rem !important;
+}
+
+.preview-content h1,
+.preview-content h2,
+.preview-content h3,
+.preview-content h4,
+.preview-content h5,
+.preview-content h6 {
+    font-size: 1.1em;
+    margin-top: 0.5rem;
+}
+
+.read-more:hover {
+    opacity: 0.8;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding: 2rem 0;
+}
+
+.pagination button,
+.pagination a {
+    font-family: 'Saira', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--foreground-dim, #6272a4);
+    background: transparent;
+    border: none;
+    padding: 0.5rem 1.2rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.pagination a[rel="next"], .pagination a[rel="prev"], .pagination button {
+    font-size: 2rem;
+}
+
+.pagination button:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+.pagination a:hover {
+    color: var(--main-highlight, #ff79c6);
+}
+
+.pagination .page-info {
+    font-size: 0.9rem;
+    color: var(--color-text, #f8f8f2);
+}
+
+.pagination .page-current {
+    position: relative;
+    font-family: 'Saira', sans-serif;
+    font-weight: 700;
+    color: var(--foreground, #f8f8f2);
+    padding: 0.5rem 0.4rem;
+}
+
+.pagination .page-current::after {
+    content: "";
+    display: block;
+    height: 0.3rem;
+    background: var(--third-highlight, #ff79c6);
+    transform: skewX(-30deg);
+    margin-top: 0.1em;
+}
+
+.pagination a.page-num {
+    border: none;
+    padding: 0.5rem 0.4rem;
+}
+
+.pagination a.page-num:hover {
+    transform: none;
+}
+
+.preview-content h2::after, .preview-content h3::after {
+    height: 2px !important;
+    width: 10% !important;
+}
+.preview-content h2, .preview-content h3, .preview-content h4 {
+    margin-left: 0;
+}
+.preview-content {
+    padding: 0 0.4em;
+}
+.preview-link .article-title {
+    font-size: 2.0rem;
+    margin-bottom: var(--spacing-xs);
+}
+@media (max-width: 768px) {
+    .preview-link .article-title {
+        font-size: 1.5rem;
+    }
+}
+@media (max-width: 480px) {
+    .preview-link .article-title {
+        font-size: 1.2rem;
+    }
+}
+
+a.code-block-lang {
+    display: none;
+}
+
+.preview-content .code-block-wrapper {
+    margin: var(--spacing-md) 0;
+}
+
+.preview-content p {
+    line-height: 1.4;
+    font-size: 0.9rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.pagination .page-info {
+    font-size: 0.9rem;
+    color: var(--color-text, #f8f8f2);
+}

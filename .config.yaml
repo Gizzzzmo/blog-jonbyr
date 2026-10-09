@@ -1,0 +1,27 @@
+markdown:
+  template: ./templates/technical-blog.jinja2
+  site_name: jonbyr
+  site_url: https://jonbyr.com
+  anchor_links: left
+  enable_source_map: false
+  number_sections: false
+  move_to_extra_config:
+    - aliases
+  extra_config_schema: ./templates/technical-blog-extra-config-schema.json
+  extra_config:
+    themes:
+      [
+        nord,
+        solarized-light,
+        dracula,
+        gruvbox-dark,
+        gruvbox-light,
+        solarized-dark,
+        tokyo-night,
+        catppuccin-latte,
+        catppuccin-mocha,
+      ]
+    default_theme: dracula
+    sidebar: false
+tag_template: ./templates/technical-blog-tags.jinja2
+rss: feed.xml

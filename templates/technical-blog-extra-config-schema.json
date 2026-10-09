@@ -1,0 +1,68 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://example.com/technical-blog-extra-config-schema.json",
+    "title": "Technical Blog Template Extra Config Schema",
+    "description": "Schema for extra_config fields used by technical-blog.jinja2 template",
+    "type": "object",
+    "properties": {
+        "default_theme": {
+            "type": "string",
+            "description": "Default color theme for syntax highlighting and UI",
+            "default": "dracula",
+            "examples": [
+                "dracula",
+                "nord",
+                "gruvbox-dark",
+                "gruvbox-light",
+                "solarized-dark",
+                "solarized-light",
+                "tokyo-night",
+                "catppuccin-mocha",
+                "catppuccin-latte",
+                "lunaperche-dark",
+                "lunaperche-light"
+            ]
+        },
+        "aliases": {
+            "type": "array",
+            "description": "List of aliases for the article",
+            "items": {
+                "type": "string"
+            }
+        },
+        "sidebar": {
+            "type": "boolean",
+            "description": "Enable the articles sidebar navigation",
+            "default": false
+        },
+        "themes": {
+            "type": "array",
+            "description": "List of available themes for the theme selector (requires 2+ themes to show selector)",
+            "items": {
+                "type": "string"
+            },
+            "minItems": 1,
+            "uniqueItems": true,
+            "examples": [
+                [
+                    "dracula",
+                    "nord",
+                    "gruvbox-dark"
+                ]
+            ]
+        },
+        "articles_per_page": {
+            "type": "integer",
+            "description": "Number of articles per feed page (feed template only)",
+            "default": 10,
+            "minimum": 1
+        },
+        "preview_blocks": {
+            "type": "integer",
+            "description": "Number of leading block elements embedded per article in feed pages",
+            "default": 7,
+            "minimum": 1
+        }
+    },
+    "additionalProperties": false
+}

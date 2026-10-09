@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tags - {{ config.site_name or 'My Blog' }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Saira:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/templates/technical-blog.css">
+    <link rel="stylesheet" href="/templates/technical-blog-tags.css">
+    <link rel="stylesheet" href="/themes/{{ config.default_theme or config.theme or 'dracula' }}.css" id="theme-stylesheet">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="/" class="nav-logo">{{ config.site_name or 'My Blog' }}</a>
+            </div>
+            {% if config.themes and config.themes|length > 1 %}
+            <div class="theme-selector" id="theme-selector">
+                <select id="theme-select" aria-label="Select theme">
+                    {% for theme in config.themes %}
+                    <option value="{{ theme }}" {% if theme == (config.default_theme or config.theme or 'dracula') %}selected{% endif %}>
+                        {{ theme }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="main">
+        <article class="article">
+            <header class="article-header">
+                <h1 class="article-title" id="article-title">Tags</h1>
+            </header>
+            <div class="article-content tags-index">
+                {% if config.tag_sections %}
+                {% for section in config.tag_sections %}
+                <section class="tag-section" id="{{ section.name }}">
+                    <h3 class="tag-heading"><a href="#{{ section.name }}" class="anchor">#</a>{{ section.name }}</h2>
+                    <div class="tag-articles">
+                        {% for article in section.articles %}
+                        <div class="tag-article-row">
+                            <a href="{{ article.url }}">{{ article.title }}</a>
+                            {% if article.publish_date %}
+                            <time datetime="{{ article.publish_date }}">{{ article.publish_date | format_date }}</time>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endfor %}
+                {% else %}
+                {{ content | safe }}
+                {% endif %}
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2025 {{ config.site_name or 'My Blog' }}. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        {% if config.themes and config.themes|length > 1 %}
+        (function() {
+            const themeSelect = document.getElementById('theme-select');
+            const themeSelector = document.getElementById('theme-selector');
+            const themeStylesheet = document.getElementById('theme-stylesheet');
+            const THEME_STORAGE_KEY = 'selected-theme';
+            const DEFAULT_THEME = '{{ config.default_theme or config.theme or "dracula" }}';
+
+            function loadSavedTheme() {
+                const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+                if (savedTheme && themeSelect) {
+                    const option = Array.from(themeSelect.options).find(opt => opt.value === savedTheme);
+                    if (option) {
+                        themeSelect.value = savedTheme;
+                        applyTheme(savedTheme);
+                    }
+                } else {
+                    applyTheme(DEFAULT_THEME);
+                }
+            }
+
+            function applyTheme(themeName) {
+                if (themeStylesheet) {
+                    themeStylesheet.href = `/themes/${themeName}.css`;
+                }
+            }
+
+            if (themeSelect) {
+                themeSelect.addEventListener('change', function() {
+                    const selectedTheme = this.value;
+                    applyTheme(selectedTheme);
+                    localStorage.setItem(THEME_STORAGE_KEY, selectedTheme);
+                });
+            }
+
+            loadSavedTheme();
+        })();
+        {% endif %}
+    </script>
+</body>
+</html>

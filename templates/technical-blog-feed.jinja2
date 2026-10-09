@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config.title or config.id or 'Untitled' }}</title
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Saira:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/templates/technical-blog.css">
+    <link rel="stylesheet" href="/templates/technical-blog-feed.css">
+    <link rel="stylesheet" href="/themes/{{ config.default_theme or config.theme or 'dracula' }}.css" id="theme-stylesheet">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="/" class="nav-logo">{{ config.site_name or 'My Blog' }}</a>
+            </div>
+            {% if config.themes and config.themes|length > 1 %}
+            <div class="theme-selector" id="theme-selector">
+                <select id="theme-select" aria-label="Select theme">
+                    {% for theme in config.themes %}
+                    <option value="{{ theme }}" {% if theme == (config.default_theme or config.theme or 'dracula') %}selected{% endif %}>
+                        {{ theme }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="main">
+        <article class="article">
+            <div class="article-content" id="feed-container">
+                {% for article in config.articles %}
+                <div class="article-preview">
+                    <a href="{{ article.path }}" class="preview-link"><h1 class="article-title">{{ article.meta.title or article.meta.id or "Untitled" }}</h1></a>
+                    {% if article.meta.publish_date or article.meta.author %}
+                    <div class="article-meta">
+                        {% if article.meta.publish_date %}
+                        <time datetime="{{ article.meta.publish_date }}">{{ article.meta.publish_date | format_date }}</time>
+                        {% endif %}
+                        {% if article.meta.author %}
+                        <span class="author"> {{ article.meta.author }}</span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% if article.tags %}
+                    <div class="article-tags">
+                        {% for tag in article.tags %}
+                        <a href="/tags.html#{{ tag }}" class="tag">{{ tag }}</a>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="preview-content">
+                        {{ (article.preview or article.html) | safe }}
+                        <a href="{{ article.path }}" class="preview-fade-link" aria-hidden="true"></a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if config.pagination %}
+            <nav class="pagination" aria-label="Feed pages">
+                {% if config.pagination.prev_url %}
+                <a href="{{ config.pagination.prev_url }}" rel="prev">&lt;</a>
+                {% else %}
+                <button disabled>&lt;</button>
+                {% endif %}
+                {% for p in config.pagination.pages %}
+                    {% if p.current %}
+                    <span class="page-current" aria-current="page">{{ p.num }}</span>
+                    {% else %}
+                    <a href="{{ p.url }}" class="page-num">{{ p.num }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if config.pagination.next_url %}
+                <a href="{{ config.pagination.next_url }}" rel="next">&gt;</a>
+                {% else %}
+                <button disabled>&gt;</button>
+                {% endif %}
+            </nav>
+            {% endif %}
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2025 {{ config.site_name or 'My Blog' }}. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        {% if config.themes and config.themes|length > 1 %}
+        (function() {
+            const themeSelect = document.getElementById('theme-select');
+            const themeSelector = document.getElementById('theme-selector');
+            const themeStylesheet = document.getElementById('theme-stylesheet');
+            const THEME_STORAGE_KEY = 'selected-theme';
+            const DEFAULT_THEME = '{{ config.default_theme or config.theme or "dracula" }}';
+
+            function loadSavedTheme() {
+                const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+                if (savedTheme && themeSelect) {
+                    const option = Array.from(themeSelect.options).find(opt => opt.value === savedTheme);
+                    if (option) {
+                        themeSelect.value = savedTheme;
+                        applyTheme(savedTheme);
+                    }
+                } else {
+                    applyTheme(DEFAULT_THEME);
+                }
+            }
+
+            function applyTheme(themeName) {
+                if (themeStylesheet) {
+                    themeStylesheet.href = `/themes/${themeName}.css`;
+                }
+            }
+
+            if (themeSelect) {
+                themeSelect.addEventListener('change', function() {
+                    const selectedTheme = this.value;
+                    applyTheme(selectedTheme);
+                    localStorage.setItem(THEME_STORAGE_KEY, selectedTheme);
+                });
+            }
+
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.shiftKey && e.key === 'T') {
+                    e.preventDefault();
+                    if (themeSelector) {
+                        themeSelector.classList.toggle('visible');
+                    }
+                }
+            });
+
+            const navLogo = document.querySelector('.nav-logo');
+            let longPressTimer = null;
+            let touchStartTime = 0;
+            const LONG_PRESS_DURATION = 500;
+
+            if (navLogo) {
+                navLogo.addEventListener('touchstart', function(e) {
+                    touchStartTime = Date.now();
+                    longPressTimer = setTimeout(function() {
+                        if (themeSelector) {
+                            themeSelector.classList.toggle('visible');
+                            navigator.vibrate && navigator.vibrate(50);
+                        }
+                    }, LONG_PRESS_DURATION);
+                });
+
+                navLogo.addEventListener('touchend', function(e) {
+                    const touchDuration = Date.now() - touchStartTime;
+                    if (longPressTimer) {
+                        clearTimeout(longPressTimer);
+                    }
+                    if (touchDuration < LONG_PRESS_DURATION) {
+                        window.location.href = navLogo.href;
+                    } else {
+                        e.preventDefault();
+                    }
+                });
+
+                navLogo.addEventListener('touchmove', function(e) {
+                    if (longPressTimer) {
+                        clearTimeout(longPressTimer);
+                        longPressTimer = null;
+                    }
+                });
+
+                navLogo.addEventListener('touchcancel', function(e) {
+                    if (longPressTimer) {
+                        clearTimeout(longPressTimer);
+                        longPressTimer = null;
+                    }
+                });
+            }
+
+            loadSavedTheme();
+        })();
+        {% endif %}
+    </script>
+</body>
+</html>

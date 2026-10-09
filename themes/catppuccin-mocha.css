@@ -1,0 +1,214 @@
+:root {
+    --background: #1e1e2e;
+    --background-elevated: #313244;
+    --foreground: #cdd6f4;
+    --foreground-dim: #6c7086;
+    
+    --cyan: #89dceb;
+    --green: #a6e3a1;
+    --yellow: #f9e2af;
+    --orange: #fab387;
+    --pink: #f5c2e7;
+    --purple: #cba6f7;
+    
+    --bg: #313244;
+    --fg: #cdd6f4;
+    --fg-dim: #6c7086;
+    --blue: #89b4fa;
+    --cyan: #89dceb;
+    --green: #a6e3a1;
+    --yellow: #f9e2af;
+    --peach: #fab387;
+    --pink: #f5c2e7;
+    --mauve: #cba6f7;
+    --red: #f38ba8;
+    --comment: #6c7086;
+    --punctuation: #bac2de;
+
+    --main-highlight: var(--mauve);
+    --second-highlight: var(--cyan);
+    --third-highlight: var(--blue);
+    
+    --good: var(--green);
+    --bad: var(--red);
+}
+
+.code { background-color: var(--bg); }
+.code .line { color: var(--fg); }
+.code .line-number { color: var(--fg-dim); }
+.code .attribute { font-style: italic; color: var(--mauve); }
+.code .comment { font-style: italic; color: var(--comment); }
+.code .constant { color: var(--peach); }
+.code .constant.builtin { font-weight: bold; color: var(--peach); }
+.code .constructor { font-weight: bold; color: var(--blue); }
+.code .function { color: var(--third-highlight); }
+.code .function.builtin { font-weight: bold; color: var(--blue); }
+.code .keyword { font-weight: bold; color: var(--main-highlight); }
+.code .module { color: var(--blue); }
+.code .number { font-weight: bold; color: var(--peach); }
+.code .operator { color: var(--cyan); }
+.code .property { color: var(--blue); }
+.code .property.builtin { font-weight: bold; color: var(--blue); }
+.code .punctuation { color: var(--punctuation); }
+.code .punctuation.bracket { color: var(--punctuation); }
+.code .punctuation.delimiter { color: var(--punctuation); }
+.code .punctuation.special { color: var(--punctuation); }
+.code .string { color: var(--green); }
+.code .string.special { color: var(--yellow); }
+.code .tag { color: var(--red); }
+.code .type { color: var(--second-highlight); }
+.code .type.builtin { font-weight: bold; color: var(--cyan); }
+.code .variable { color: var(--fg); }
+.code .variable.builtin { font-weight: bold; color: var(--peach); }
+.code .variable.parameter { text-decoration: underline; color: var(--yellow); }
+
+/* ===== Custom tree-sitter highlighter classes ===== */
+.ts-code {
+    background-color: var(--bg);
+    color: var(--fg);
+    line-height: 1.5;
+}
+
+.ts-keyword {
+    color: var(--main-highlight);
+    font-weight: bold;
+}
+
+.ts-code [class*="opcode"] {
+    color: var(--main-highlight);
+}
+
+[class*="-ts-token-in"],
+[class*="-ts-token-as"],
+[class*="-ts-token-is"] {
+    font-weight: normal;
+}
+
+[class^="ts-primitive_type"],
+[class*="-ts-primitive_type"] {
+    color: var(--second-highlight);
+    font-style: italic;
+}
+
+[class^="ts-integer"],
+[class^="ts-float"],
+[class^="ts-true"],
+[class^="ts-false"] {
+    color: var(--peach);
+    font-weight: bold;
+}
+
+.ts-constant,
+.ts-number_literal {
+    color: var(--peach);
+    font-weight: bold;
+}
+
+.ts-directive
+.ts-type_identifier {
+    font-weight: 1000;
+    letter-spacing: -0.06em;
+    color: var(--second-highlight);
+}
+
+[class^="ts-string_start"],
+[class^="ts-string_end"],
+[class*="-ts-string_start"],
+[class*="-ts-string_end"] {
+    color: var(--green);
+    font-weight: bold;
+}
+
+[class^="ts-string-"],
+[class^="ts-string_"] {
+    color: var(--green);
+}
+
+[class*="ts-identifier-"][class*="-parent-function_definition"],
+[class*="ts-identifier-"][class*="-parent-function_declarator"] {
+    color: var(--third-highlight);
+    font-weight: bold;
+    font-style: normal;
+}
+
+[class*="ts-identifier-"][class*="-parent-call"] {
+    color: var(--blue);
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class*="ts-identifier-"][class*="-parent-parameters"],
+[class*="ts-identifier-"][class*="-parent-default_parameter"],
+[class*="ts-identifier-"][class*="-parent-parameter_declaration"] {
+    color: var(--yellow);
+    font-weight: normal;
+}
+
+[class*="ts-identifier-"][class*="-parent-argument_list"],
+[class*="ts-identifier-"][class*="-parent-interpolation"],
+[class*="ts-identifier-"][class*="-parent-binary_expression"],
+[class*="ts-identifier-"][class*="-parent-for_statement"],
+[class*="ts-identifier-"][class*="-parent-return_statement"],
+[class*="ts-identifier-"][class*="-parent-init_declarator"] {
+    color: var(--fg);
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class^="ts-identifier"] {
+    color: var(--fg);
+}
+
+.ts-param-ref {
+    color: var(--yellow);
+    font-weight: normal;
+}
+
+[class^="ts-comment"],
+[class^="ts-line_comment"],
+[class^="ts-block_comment"] {
+    color: var(--comment);
+    font-style: italic;
+}
+
+[class*="preproc"] {
+    color: var(--mauve);
+}
+
+[class^="ts-function_definition"],
+[class^="ts-function_declarator"],
+[class^="ts-block"],
+[class^="ts-compound_statement"],
+[class^="ts-parameters"],
+[class^="ts-parameter_list"],
+[class^="ts-argument_list"],
+[class^="ts-call"],
+[class^="ts-for_statement"],
+[class^="ts-return_statement"],
+[class^="ts-default_parameter"],
+[class^="ts-interpolation"],
+[class^="ts-string"] {
+    display: inline;
+}
+
+:not(.ts-string_literal) > [class^="ts-anonymous"] {
+    color: var(--fg);
+}
+
+.ts-system_lib_string,
+[class^="ts-string_content"],
+[class*="-ts-string_content"] {
+    color: var(--green);
+}
+
+.ts-parent-macro_invocation {
+    color: var(--cyan);
+}
+
+:not(.ts-string_literal) > .ts-token---, :not(.ts-string_literal) > .ts-token-- {
+    color: var(--cyan);
+}
+
+.ts-command_name {
+    color: var(--purple);
+}

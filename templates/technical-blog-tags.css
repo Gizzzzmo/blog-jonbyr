@@ -1,0 +1,35 @@
+.tags-index .tag-section {
+    margin-top: var(--spacing-xl);
+    scroll-margin-top: var(--spacing-md);
+}
+
+.tags-index .tag-section:first-child {
+    margin-top: var(--spacing-md);
+}
+
+.tags-index .tag-articles {
+    margin-top: var(--spacing-md);
+}
+
+.tags-index .tag-article-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0.4rem 0;
+}
+
+.tags-index .tag-article-row time {
+    margin-top: -0.2rem;
+    font-size: 0.85rem;
+    color: var(--foreground-dim, #6272a4);
+    white-space: nowrap;
+}
+
+.tag-article-row a:hover {
+    opacity: 1;
+}
+
+.tag-article-row a {
+    opacity: 0.8;
+    border-bottom: none;
+}
