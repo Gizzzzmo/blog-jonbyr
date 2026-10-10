@@ -1,0 +1,7 @@
+{
+  // Static-asset worker for the apex site. Routes (jonbyr.com) are managed
+  // in the Cloudflare dashboard; this file only binds the build output.
+  "name": "jonbyr-blog",
+  "compatibility_date": "2026-10-01",
+  "assets": { "directory": "./build" }
+}

@@ -1,0 +1,9 @@
+{
+  // Static-asset worker for shared version-independent media. Serves
+  // build-cdn/ at the root, so media URLs keep their /static/ prefix
+  // (https://cdn.jonbyr.com/static/<hash>.<ext>). Routes are managed in
+  // the Cloudflare dashboard.
+  "name": "jonbyr-cdn",
+  "compatibility_date": "2026-10-01",
+  "assets": { "directory": "./build-cdn" }
+}

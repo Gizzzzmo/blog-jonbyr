@@ -2,6 +2,8 @@ markdown:
   template: ./templates/technical-blog.jinja2
   site_name: jonbyr
   site_url: https://jonbyr.com
+  source_latest_url: https://blog-git.jonbyr.com
+  source_version_url: https://blog-source.jonbyr.com
   anchor_links: left
   enable_source_map: false
   number_sections: false

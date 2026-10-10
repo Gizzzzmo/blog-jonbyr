@@ -1,4 +1,4 @@
-.PHONY: local serve-local site clean deploy-apex
+.PHONY: local serve-local site clean deploy deploy-blog deploy-cdn
 
 # Port for local test builds (overridden configs point here).
 LOCAL_PORT ?= 8000
@@ -46,9 +46,14 @@ site:
 		--media-output-dir build-cdn/static
 
 clean:
-	rm -rf build build-local
+	rm -rf build build-cdn build-local
 
-deploy-apex: site
-	wrangler pages deploy build --project-name website
+deploy-blog: site
+	wrangler deploy --config wrangler.blog.jsonc
+
+deploy-cdn: site
+	wrangler deploy --config wrangler.cdn.jsonc
+
+deploy: deploy-blog deploy-cdn
 
 # todo: design deployment to personal vps
