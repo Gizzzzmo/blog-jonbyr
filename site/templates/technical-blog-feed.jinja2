@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config.title or config.id or 'Untitled' }}</title
+    <title>{{ config.title or config.id or 'Untitled' }}</title>
     <link rel="stylesheet" href="/templates/technical-blog.css">
     <link rel="stylesheet" href="/templates/technical-blog-feed.css">
     <link rel="stylesheet" href="/themes/{{ config.default_theme or config.theme or 'dracula' }}.css" id="theme-stylesheet">
@@ -41,18 +41,16 @@
                 </select>
             </div>
             {% endif %}
-            <details class="nav-git">
-                <summary aria-label="Source repository">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-                </summary>
-                <div class="nav-git-menu">
-                    <a href="{{ config.source_latest_url }}">latest</a>
-                    {% if config.version_history %}
-                    {% set current_version = config.version_history[-1] %}
-                    <a href="{{ config.source_version_url }}/{{ current_version.commit }}" title="{{ current_version.commit }}">{{ current_version.commit[:8] }}</a>
-                    {% endif %}
-                </div>
-            </details>
+            <div class="nav-git">
+                <span class="nav-git-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>
+                </span>
+                <a href="{{ config.source_latest_url }}">latest</a>
+                {% if config.version_history %}
+                {% set current_version = config.version_history[-1] %}
+                <a href="{{ config.source_version_url }}/{{ current_version.commit }}" title="{{ current_version.commit }}">{{ current_version.commit[:8] }}</a>
+                {% endif %}
+            </div>
         </div>
     </nav>
 
