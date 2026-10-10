@@ -35,11 +35,15 @@
 
         devShells.default = pkgs.mkShell {
           name = "blog-jonbyr-dev-shell";
-          packages = [
+          packages = with pkgs; [
             site-builder
-            pkgs.wrangler
+            python313Packages.mdformat
+            python313Packages.mdformat-frontmatter
+            python313Packages.mdformat-wikilink
+            python313Packages.mdformat-gfm
+            wrangler
             # File watcher for `make serve-local` (rebuild on source change).
-            pkgs.entr
+            entr
           ];
         };
       }

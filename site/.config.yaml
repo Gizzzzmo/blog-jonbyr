@@ -8,6 +8,7 @@ markdown:
   move_to_extra_config:
     - aliases
   extra_config_schema: ./templates/technical-blog-extra-config-schema.json
+  media_url_template: https://cdn.jonbyr.com/static/{name}
   content_assets:
     fira_code: templates/FiraCode-Regular.ttf
     saira: templates/Saira-Variable.ttf
