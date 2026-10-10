@@ -32,9 +32,10 @@ serve-local: local
 	done
 
 # Production build (in-place, resumable): absolute production URLs from
-# site/.config.yaml; strict so warnings fail the build.
+# site/.config.yaml; strict so warnings fail the build. Media defaults
+# cover the rest (last + output both build/static).
 site:
-	site-builder site -o build --last-build build --strict
+	site-builder site -o build --last-ledger build/.site_versions.json --strict
 
 clean:
 	rm -rf build build-local
