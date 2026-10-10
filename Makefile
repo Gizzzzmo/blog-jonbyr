@@ -5,10 +5,15 @@ LOCAL_PORT ?= 8000
 
 # Self-contained local build: production-absolute values are overridden
 # with local ones (no repo changes needed). Serve with `make serve-local`.
+# live_reload injects the auto-reload snippet (see templates); __version
+# is written last so reloads always fetch post-build HTML. A failed build
+# stops make before the sentinel flips, so broken builds never reload.
 local:
 	site-builder site -o build-local --offline \
 		-D site_url=http://localhost:$(LOCAL_PORT) \
-		-D media_url_template='/static/{name}'
+		-D media_url_template='/static/{name}' \
+		-D live_reload=true
+	date +%s%N > build-local/__version
 
 # Serve the local build and rebuild on source change (Ctrl-C stops
 # both server and watcher). Watches site/ + this Makefile only: never
@@ -35,7 +40,10 @@ serve-local: local
 # site/.config.yaml; strict so warnings fail the build. Media defaults
 # cover the rest (last + output both build/static).
 site:
-	site-builder site -o build --last-ledger build/.site_versions.json --strict
+	site-builder site -o build  --strict \
+		--last-ledger build/.site_versions.json \
+		--last-media-dir build-cdn/static \
+		--media-output-dir build-cdn/static
 
 clean:
 	rm -rf build build-local

@@ -197,5 +197,25 @@
         })();
         {% endif %}
     </script>
+    {% if config.live_reload %}
+    <script>
+    // Local-dev auto-reload: polls the __version sentinel written by
+    // `make local` and reloads when a rebuild completes. Only rendered
+    // for local builds (gated by the live_reload define).
+    (function () {
+        var seen = null;
+        setInterval(function () {
+            fetch('/__version?x=' + Date.now()).then(function (r) {
+                if (!r.ok) return null;
+                return r.text();
+            }).then(function (v) {
+                if (v === null) return;
+                if (seen === null) { seen = v; return; }
+                if (v !== seen) location.reload();
+            }).catch(function () {});
+        }, 750);
+    })();
+    </script>
+    {% endif %}
 </body>
 </html>
