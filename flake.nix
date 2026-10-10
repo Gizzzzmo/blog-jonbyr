@@ -26,7 +26,8 @@
           dontUnpack = true;
           nativeBuildInputs = [ site-builder ];
           buildPhase = ''
-            site-builder "$src/site" --output $out --offline
+            site-builder "$src/site" --output $out --offline \
+              -D "current_year=$(date +%Y)"
           '';
           installPhase = "true";
         };

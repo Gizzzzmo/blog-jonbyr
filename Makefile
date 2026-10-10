@@ -13,7 +13,8 @@ local:
 		--last-ledger build/.site_versions.json \
 		-D site_url=http://localhost:$(LOCAL_PORT) \
 		-D media_url_template='/static/{name}' \
-		-D live_reload=true
+		-D live_reload=true \
+		-D current_year=$$(date +%Y)
 	date +%s%N > build-local/__version
 
 # Serve the local build and rebuild on source change (Ctrl-C stops
@@ -44,7 +45,8 @@ site:
 	site-builder site -o build  --strict \
 		--last-ledger build/.site_versions.json \
 		--last-media-dir build-cdn/static \
-		--media-output-dir build-cdn/static
+		--media-output-dir build-cdn/static \
+		-D current_year=$$(date +%Y)
 
 clean:
 	rm -rf build build-local build-cdn/static
