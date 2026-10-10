@@ -11,7 +11,7 @@ code:
     run_args: "{compiler: 'armv7-clang2010', options: '-std=c++20 -O1', run: true}"
 description: Encoding preconditions in the C++ typesystem
 export_markdown: true
-number_sections: true
+number_sections: false
 sidebar_numbered: true
 title: Range Constrained Types in C++
 ---

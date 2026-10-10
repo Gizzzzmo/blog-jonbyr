@@ -34,10 +34,10 @@ body {
 }
 
 .nav-container {
+    padding-right: calc(max(900px, 60vw) - 800px);
     max-width: max(800px, 60vw);
     margin: 0 auto;
-    padding: var(--spacing-md);
-    padding-left: 2vw;
+    padding-left: 0.8rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -118,22 +118,23 @@ body {
     box-shadow: 0 0 0 3px var(--main-highlight-alpha, rgba(139, 233, 253, 0.3));
 }
 
+.nav-git-links {
+    display: flex;
+    flex-direction: column;
+}
+
 .nav-git {
     display: flex;
     align-items: center;
     gap: 0.4rem;
     font-size: 0.8rem;
-    opacity: 0.55;
-}
-
-.nav-git:hover {
-    opacity: 1;
 }
 
 .nav-git-icon {
     display: flex;
     align-items: center;
     color: var(--foreground, #282a36);
+    opacity: 0.6;
 }
 
 .nav-git-icon svg {
@@ -142,12 +143,22 @@ body {
     fill: var(--foreground, #000000);
 }
 
+.nav-git:hover .nav-git-icon {
+    opacity: 1;
+}
+
 .nav-git a {
+    text-align: right;
+    opacity: 0.4;
     color: var(--foreground, #282a36);
     text-decoration: underline;
     text-decoration-thickness: 0.5px;
-    text-underline-offset: 2px;
+    text-underline-offset: 1px;
     font-family: 'Fira Code', monospace;
+}
+
+.nav-git a:hover {
+    opacity: 0.9;
 }
 
 .main {
@@ -906,13 +917,12 @@ a.tag:hover {
 }
 
 .article-content .ts-code .line-number {
-    display: none;
+    /* display: none; */
     color: var(--foreground-dim);
     font-weight: normal;
     font-style: normal;
     user-select: none;
     text-align: right;
-    padding: 0 10px;
 }
 
 .article-content .code-block-wrapper {
@@ -1023,6 +1033,7 @@ a.tag:hover {
 @media (max-width: 1080px) {
     .nav-container {
         margin: 0 0; 
+        padding-right: 0.8rem;
     }
 }
 
