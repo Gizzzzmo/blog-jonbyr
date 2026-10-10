@@ -136,6 +136,12 @@ body {
     color: var(--foreground, #282a36);
 }
 
+.nav-git-icon svg {
+    /* Presentation attribute is black; the theme foreground wins here,
+    so the logo follows the active theme (muted by .nav-git opacity). */
+    fill: var(--foreground, #000000);
+}
+
 .nav-git a {
     color: var(--foreground, #282a36);
     text-decoration: underline;
