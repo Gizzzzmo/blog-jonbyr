@@ -46,7 +46,7 @@ site:
 		--media-output-dir build-cdn/static
 
 clean:
-	rm -rf build build-cdn build-local
+	rm -rf build build-local build-cdn/static
 
 deploy-blog: site
 	wrangler deploy --config wrangler.blog.jsonc

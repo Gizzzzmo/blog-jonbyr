@@ -1,0 +1,5 @@
+# CAS build output is untracked; only the worker config files in this
+# directory (_headers and this file) are committed.
+*
+!.gitignore
+!_headers

@@ -2,5 +2,4 @@ build/
 result/
 .direnv/
 build-local/
-build-cdn/
 .wrangler/

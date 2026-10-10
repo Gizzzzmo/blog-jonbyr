@@ -1,0 +1,6 @@
+# Custom response headers for the jonbyr-cdn worker (parsed, never served).
+# The CDN hosts immutable content-addressed blobs shared by all site
+# versions, so cross-origin use is wide open and caching is aggressive.
+/static/*
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=31556952, immutable
