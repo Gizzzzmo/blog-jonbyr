@@ -10,6 +10,7 @@ LOCAL_PORT ?= 8000
 # stops make before the sentinel flips, so broken builds never reload.
 local:
 	site-builder site -o build-local --offline \
+		--last-ledger build/.site_versions.json \
 		-D site_url=http://localhost:$(LOCAL_PORT) \
 		-D media_url_template='/static/{name}' \
 		-D live_reload=true
