@@ -38,6 +38,8 @@
           packages = [
             site-builder
             pkgs.wrangler
+            # File watcher for `make serve-local` (rebuild on source change).
+            pkgs.entr
           ];
         };
       }
