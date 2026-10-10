@@ -1,0 +1,205 @@
+{# Shared theme behavior for article/feed/tags pages. Two modes:
+   - all_themes (local-test builds): production toggle PLUS the full
+     hidden selector over extra_config.themes (revealed by double-click
+     or long-press on the toggle), manual choice persisted.
+   - default build: two-option light/dark toggle over the configured
+     pair; OS preference wins unless a stored in-pair choice exists
+     (applied pre-paint by the head script). #}
+{% set xc = config.extra_config or {} %}
+{% if config.all_themes %}
+{% set light_theme = xc.light_theme or 'dracula-light' %}
+{% set dark_theme = xc.dark_theme or 'dracula' %}
+(function() {
+    const themeSelect = document.getElementById('theme-select');
+    const themeSelector = document.getElementById('theme-selector');
+    const themeStylesheet = document.getElementById('theme-stylesheet');
+    const themeToggle = document.getElementById('theme-toggle');
+    const THEME_STORAGE_KEY = 'selected-theme';
+    const DEFAULT_THEME = '{{ xc.default_theme or config.theme or "dracula" }}';
+    const LIGHT_THEME = '{{ light_theme }}';
+    const DARK_THEME = '{{ dark_theme }}';
+    let suppressToggleClick = false;
+
+    function loadSavedTheme() {
+        const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+        if (savedTheme && themeSelect) {
+            const option = Array.from(themeSelect.options).find(opt => opt.value === savedTheme);
+            if (option) {
+                themeSelect.value = savedTheme;
+                applyTheme(savedTheme);
+            }
+        } else {
+            applyTheme(DEFAULT_THEME);
+        }
+        syncUI(currentThemeName());
+    }
+
+    function currentThemeName() {
+        if (themeStylesheet) {
+            const match = themeStylesheet.href.match(/\/themes\/([^\/.]+)\.css/);
+            if (match) {
+                return match[1];
+            }
+        }
+        return DEFAULT_THEME;
+    }
+
+    function applyTheme(themeName) {
+        if (themeStylesheet) {
+            themeStylesheet.href = `/themes/${themeName}.css`;
+        }
+    }
+
+    // Keep both controls visually consistent, whichever one was used.
+    function syncUI(themeName) {
+        if (themeSelect) {
+            const option = Array.from(themeSelect.options).find(opt => opt.value === themeName);
+            if (option) {
+                themeSelect.value = themeName;
+            }
+        }
+        const glyph = document.getElementById('theme-toggle-glyph');
+        if (glyph) {
+            glyph.textContent = themeName === LIGHT_THEME ? '\u2600' : '\u263E';
+        }
+        if (themeToggle) {
+            themeToggle.setAttribute('aria-label', themeName === LIGHT_THEME ? 'Switch to dark theme' : 'Switch to light theme');
+        }
+    }
+
+    if (themeSelect) {
+        themeSelect.addEventListener('change', function() {
+            const selectedTheme = this.value;
+            applyTheme(selectedTheme);
+            localStorage.setItem(THEME_STORAGE_KEY, selectedTheme);
+            syncUI(selectedTheme);
+        });
+    }
+
+    // The toggle flips within the production pair, exactly as in the
+    // default build; the selector on top allows any listed theme.
+    function togglePairTheme() {
+        const nextTheme = currentThemeName() === LIGHT_THEME ? DARK_THEME : LIGHT_THEME;
+        applyTheme(nextTheme);
+        localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+        syncUI(nextTheme);
+    }
+
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function() {
+            if (suppressToggleClick) {
+                suppressToggleClick = false;
+                return;
+            }
+            togglePairTheme();
+        });
+
+        // Double-click reveals the hidden full selector (the two
+        // precursor clicks flip the theme twice: net zero change).
+        themeToggle.addEventListener('dblclick', function() {
+            if (themeSelector) {
+                themeSelector.classList.toggle('visible');
+            }
+        });
+
+        // Long-press reveals the selector on touch screens; the
+        // following synthetic click is swallowed (see click handler).
+        let longPressTimer = null;
+        const LONG_PRESS_DURATION = 500;
+
+        themeToggle.addEventListener('touchstart', function(e) {
+            longPressTimer = setTimeout(function() {
+                if (themeSelector) {
+                    themeSelector.classList.toggle('visible');
+                    navigator.vibrate && navigator.vibrate(50);
+                }
+                suppressToggleClick = true;
+            }, LONG_PRESS_DURATION);
+        });
+
+        const cancelLongPress = function() {
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+        };
+
+        themeToggle.addEventListener('touchend', function(e) {
+            // If the timer already fired, swallow the synthetic click.
+            if (longPressTimer) {
+                cancelLongPress();
+            } else {
+                e.preventDefault();
+            }
+        });
+
+        themeToggle.addEventListener('touchmove', cancelLongPress);
+        themeToggle.addEventListener('touchcancel', cancelLongPress);
+    }
+
+    loadSavedTheme();
+})();
+{% else %}
+{% set light_theme = xc.light_theme or 'dracula-light' %}
+{% set dark_theme = xc.dark_theme or 'dracula' %}
+(function() {
+    const LIGHT_THEME = '{{ light_theme }}';
+    const DARK_THEME = '{{ dark_theme }}';
+    const THEME_STORAGE_KEY = 'selected-theme';
+
+    function isPairTheme(name) {
+        return name === LIGHT_THEME || name === DARK_THEME;
+    }
+
+    function systemTheme() {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            return LIGHT_THEME;
+        }
+        return DARK_THEME;
+    }
+
+    function effectiveTheme() {
+        try {
+            const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+            // Stale values outside the pair (e.g. saved from the full
+            // selector) fall through to the OS preference.
+            if (isPairTheme(savedTheme)) {
+                return savedTheme;
+            }
+        } catch (e) {}
+        return systemTheme();
+    }
+
+    function applyTheme(themeName) {
+        const darkLink = document.getElementById('theme-dark');
+        const lightLink = document.getElementById('theme-light');
+        if (darkLink) {
+            darkLink.media = themeName === DARK_THEME ? 'all' : 'not all';
+        }
+        if (lightLink) {
+            lightLink.media = themeName === LIGHT_THEME ? 'all' : 'not all';
+        }
+        const glyph = document.getElementById('theme-toggle-glyph');
+        if (glyph) {
+            glyph.textContent = themeName === LIGHT_THEME ? '\u2600' : '\u263E';
+        }
+        const toggle = document.getElementById('theme-toggle');
+        if (toggle) {
+            toggle.setAttribute('aria-label', themeName === LIGHT_THEME ? 'Switch to dark theme' : 'Switch to light theme');
+        }
+    }
+
+    const toggle = document.getElementById('theme-toggle');
+    if (toggle) {
+        toggle.addEventListener('click', function() {
+            const nextTheme = effectiveTheme() === LIGHT_THEME ? DARK_THEME : LIGHT_THEME;
+            try {
+                localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+            } catch (e) {}
+            applyTheme(nextTheme);
+        });
+    }
+
+    applyTheme(effectiveTheme());
+})();
+{% endif %}

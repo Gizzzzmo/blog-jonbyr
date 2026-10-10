@@ -1,28 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config.title or config.id or 'Untitled' }}</title>
-    <link rel="stylesheet" href="/templates/technical-blog.css">
+    {% include 'head.jinja2' %}
     <link rel="stylesheet" href="/templates/technical-blog-feed.css">
-    <link rel="stylesheet" href="/themes/{{ config.default_theme or config.theme or 'dracula' }}.css" id="theme-stylesheet">
-    {% if config.content_assets %}
-    <style>
-        @font-face {
-            font-family: 'Fira Code';
-            src: url('{{ config.content_assets.fira_code }}') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-        }
-        @font-face {
-            font-family: 'Saira';
-            src: url('{{ config.content_assets.saira }}') format('truetype');
-            font-weight: 100 900;
-            font-style: normal;
-        }
-    </style>
-    {% endif %}
 </head>
 <body>
     {% include "navbar.jinja2" %}
@@ -31,6 +11,7 @@
         <article class="article">
             <div class="article-content" id="feed-container">
                 {% for article in config.articles %}
+                {% if not article.meta.extra_config.hide_from_feed %}
                 <div class="article-preview">
                     <a href="{{ article.path }}" class="preview-link"><h1 class="article-title">{{ article.meta.title or article.meta.id or "Untitled" }}</h1></a>
                     {% if article.meta.publish_date or article.meta.author %}
@@ -55,6 +36,7 @@
                         <a href="{{ article.path }}" class="preview-fade-link" aria-hidden="true"></a>
                     </div>
                 </div>
+                {% endif %}
                 {% endfor %}
             </div>
 
@@ -82,103 +64,10 @@
         </article>
     </main>
 
-    <footer class="footer">
-        <div class="footer-container">
-            <p>&copy; {{ config.current_year }} {{ config.site_name or 'My Blog' }}. All rights reserved.</p>
-        </div>
-    </footer>
+    {% include 'footer.jinja2' %}
 
     <script>
-        {% if config.themes and config.themes|length > 1 %}
-        (function() {
-            const themeSelect = document.getElementById('theme-select');
-            const themeSelector = document.getElementById('theme-selector');
-            const themeStylesheet = document.getElementById('theme-stylesheet');
-            const THEME_STORAGE_KEY = 'selected-theme';
-            const DEFAULT_THEME = '{{ config.default_theme or config.theme or "dracula" }}';
-
-            function loadSavedTheme() {
-                const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-                if (savedTheme && themeSelect) {
-                    const option = Array.from(themeSelect.options).find(opt => opt.value === savedTheme);
-                    if (option) {
-                        themeSelect.value = savedTheme;
-                        applyTheme(savedTheme);
-                    }
-                } else {
-                    applyTheme(DEFAULT_THEME);
-                }
-            }
-
-            function applyTheme(themeName) {
-                if (themeStylesheet) {
-                    themeStylesheet.href = `/themes/${themeName}.css`;
-                }
-            }
-
-            if (themeSelect) {
-                themeSelect.addEventListener('change', function() {
-                    const selectedTheme = this.value;
-                    applyTheme(selectedTheme);
-                    localStorage.setItem(THEME_STORAGE_KEY, selectedTheme);
-                });
-            }
-
-            document.addEventListener('keydown', function(e) {
-                if (e.ctrlKey && e.shiftKey && e.key === 'T') {
-                    e.preventDefault();
-                    if (themeSelector) {
-                        themeSelector.classList.toggle('visible');
-                    }
-                }
-            });
-
-            const navLogo = document.querySelector('.nav-logo');
-            let longPressTimer = null;
-            let touchStartTime = 0;
-            const LONG_PRESS_DURATION = 500;
-
-            if (navLogo) {
-                navLogo.addEventListener('touchstart', function(e) {
-                    touchStartTime = Date.now();
-                    longPressTimer = setTimeout(function() {
-                        if (themeSelector) {
-                            themeSelector.classList.toggle('visible');
-                            navigator.vibrate && navigator.vibrate(50);
-                        }
-                    }, LONG_PRESS_DURATION);
-                });
-
-                navLogo.addEventListener('touchend', function(e) {
-                    const touchDuration = Date.now() - touchStartTime;
-                    if (longPressTimer) {
-                        clearTimeout(longPressTimer);
-                    }
-                    if (touchDuration < LONG_PRESS_DURATION) {
-                        window.location.href = navLogo.href;
-                    } else {
-                        e.preventDefault();
-                    }
-                });
-
-                navLogo.addEventListener('touchmove', function(e) {
-                    if (longPressTimer) {
-                        clearTimeout(longPressTimer);
-                        longPressTimer = null;
-                    }
-                });
-
-                navLogo.addEventListener('touchcancel', function(e) {
-                    if (longPressTimer) {
-                        clearTimeout(longPressTimer);
-                        longPressTimer = null;
-                    }
-                });
-            }
-
-            loadSavedTheme();
-        })();
-        {% endif %}
+        {% include 'theme-script.jinja2' %}
     </script>
     {% if config.live_reload %}
     <script>

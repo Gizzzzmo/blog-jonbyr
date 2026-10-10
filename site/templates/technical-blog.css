@@ -21,7 +21,7 @@ body {
 
 .nav {
     border-bottom: 1px solid var(--comment, #6272a4);
-    padding: var(--spacing-md) 0;
+    padding: var(--spacing-sm) 0;
     background: linear-gradient(135deg, var(--background, #f8f8f2) 0%, var(--comment, #6272a4) 100%);
     background-size: 200% 200%;
     animation: gradient-shift 10s ease infinite;
@@ -91,6 +91,41 @@ body {
     color: var(--purple, #bd93f9);
 }
 
+.nav-pages {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-pages a {
+    position: relative;
+    /* Stacking context of its own: .nav is animated (hence stacked), so
+    without this the ::before chip would sink behind the navbar paint. */
+    z-index: 0;
+    /* Same typeface as the logo (inherited body stack), a step smaller. */
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
+    padding: 0 0.5em;
+    color: var(--background, #282a36);
+    text-decoration: none;
+}
+
+/* Slanted chip: same skewX(-30deg) as the h1/h2 underline bars, but as a
+text-safe ::before so the label itself stays horizontal and legible. */
+.nav-pages a::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--second-highlight, #ff79c6);
+    transform: skewX(-15deg);
+    z-index: -1;
+}
+
+.nav-pages a:hover {
+    filter: brightness(1.2);
+}
+
 .theme-selector {
     display: flex;
     align-items: center;
@@ -114,6 +149,33 @@ body {
 }
 
 .theme-selector select:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--main-highlight-alpha, rgba(139, 233, 253, 0.3));
+}
+
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    font-size: 1.1rem;
+    line-height: 1;
+    border: 2px solid var(--main-highlight, #8be9fd);
+    border-radius: 4px;
+    background: var(--background, #f8f8f2);
+    color: var(--foreground, #282a36);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    background: var(--background-elevated, #44475a);
+    transform: scale(1.05);
+}
+
+.theme-toggle:focus {
     outline: none;
     box-shadow: 0 0 0 3px var(--main-highlight-alpha, rgba(139, 233, 253, 0.3));
 }
@@ -148,6 +210,7 @@ body {
 }
 
 .nav-git a {
+    font-size: 0.7rem;
     text-align: right;
     opacity: 0.4;
     color: var(--foreground, #282a36);
@@ -910,6 +973,10 @@ a.tag:hover {
     font-size: 0.9rem;
 }
 
+.footer-container a {
+    color: var(--comment, #6272a4);
+}
+
 .article-content pre code, .article-content pre.ts-code {
     font-family: 'Fira Code', monospace;
     font-size: 0.85rem;
@@ -1037,7 +1104,7 @@ a.tag:hover {
     }
 }
 
-@media (min-width: 1080px) {
+@media (min-width: 1081px) {
     .sidebar-toggle {
         display: none;
     }
@@ -1204,6 +1271,14 @@ a.tag:hover {
 }
 
 @media (min-width: 1281px) {
+    .nav-left {
+        margin-left: 1vw;
+    }
+
+    .nav-git {
+        margin-right: 3rem;
+    }
+
     .toc-toggle {
         display: none;
     }

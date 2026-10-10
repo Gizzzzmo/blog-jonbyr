@@ -14,6 +14,7 @@ local:
 		-D site_url=http://localhost:$(LOCAL_PORT) \
 		-D media_url_template='/static/{name}' \
 		-D live_reload=true \
+		-D all_themes=true \
 		-D current_year=$$(date +%Y)
 	date +%s%N > build-local/__version
 

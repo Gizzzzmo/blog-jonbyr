@@ -20,6 +20,7 @@ markdown:
         nord,
         solarized-light,
         dracula,
+        dracula-light,
         gruvbox-dark,
         gruvbox-light,
         solarized-dark,
@@ -28,6 +29,10 @@ markdown:
         catppuccin-mocha,
       ]
     default_theme: dracula
+    # Light/dark pair for the default build's two-option toggle (applied via
+    # prefers-color-scheme, overridable per article/directory frontmatter).
+    light_theme: dracula-light
+    dark_theme: dracula
     sidebar: false
 tag_template: ./templates/technical-blog-tags.jinja2
 rss: feed.xml

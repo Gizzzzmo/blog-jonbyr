@@ -1,0 +1,67 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ config.title or config.id or 'Untitled' }}</title>
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="/templates/technical-blog.css">
+{% set xc = config.extra_config or {} %}
+{% if config.all_themes %}
+<link rel="stylesheet" href="/themes/{{ xc.default_theme or config.theme or 'dracula' }}.css" id="theme-stylesheet">
+{% else %}
+{# Default build: exactly one light and one dark theme, switched by the
+browser via prefers-color-scheme. No-JS clients follow the OS; the
+pre-paint script below upgrades a stored manual choice. #}
+{% set light_theme = xc.light_theme or 'dracula-light' %}
+{% set dark_theme = xc.dark_theme or 'dracula' %}
+<link rel="stylesheet" href="/themes/{{ dark_theme }}.css" id="theme-dark" media="(prefers-color-scheme: dark)">
+<link rel="stylesheet" href="/themes/{{ light_theme }}.css" id="theme-light" media="(prefers-color-scheme: light)">
+<script>
+try {
+    var storedTheme = localStorage.getItem('selected-theme');
+    if (storedTheme === '{{ light_theme }}' || storedTheme === '{{ dark_theme }}') {
+        document.getElementById('theme-dark').media = storedTheme === '{{ dark_theme }}' ? 'all' : 'not all';
+        document.getElementById('theme-light').media = storedTheme === '{{ light_theme }}' ? 'all' : 'not all';
+    }
+} catch (e) {}
+</script>
+{% endif %}
+{% if config.content_assets %}
+<style>
+    @font-face {
+        font-family: 'Fira Code';
+        src: url('{{ config.content_assets.fira_code }}') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: 'Saira';
+        src: url('{{ config.content_assets.saira }}') format('truetype');
+        font-weight: 100 900;
+        font-style: normal;
+    }
+</style>
+{% endif %}
+<style>
+    .theme-selector { display: none; }
+    .theme-selector.visible { display: block; }
+    {% if config.extra_config.sidebar and config.articles and config.articles|length > 0 %}
+    @media (max-width: 1280px) and (min-width: 1080px) {
+        .article {
+            transform: translateX(14vw);
+        }
+
+        .nav-container div {
+            transform: translateX(8vw);
+        }
+
+        .articles-sidebar {
+            width: calc((100vw - max(900px, 60vw)) * 0.9);
+        }
+    }
+    {% else %}
+    @media (max-width: 1280px) and (min-width: 1080px) {
+        .nav-left {
+            margin-left: -6%;
+        }
+    }
+    {% endif %}
+</style>

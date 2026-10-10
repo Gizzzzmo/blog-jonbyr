@@ -12,7 +12,8 @@ code:
 description: Encoding preconditions in the C++ typesystem
 export_markdown: true
 number_sections: false
-sidebar_numbered: true
+extra_config:
+  sidebar: false
 title: Range Constrained Types in C++
 ---
 

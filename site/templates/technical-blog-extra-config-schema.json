@@ -11,6 +11,7 @@
             "default": "dracula",
             "examples": [
                 "dracula",
+                "dracula-light",
                 "nord",
                 "gruvbox-dark",
                 "gruvbox-light",
@@ -51,6 +52,16 @@
                 ]
             ]
         },
+        "light_theme": {
+            "type": "string",
+            "description": "Light theme of the default build's light/dark pair (applied via prefers-color-scheme, overridable per article)",
+            "default": "dracula-light"
+        },
+        "dark_theme": {
+            "type": "string",
+            "description": "Dark theme of the default build's light/dark pair (applied via prefers-color-scheme, overridable per article)",
+            "default": "dracula"
+        },
         "articles_per_page": {
             "type": "integer",
             "description": "Number of articles per feed page (feed template only)",
@@ -62,6 +73,17 @@
             "description": "Number of leading block elements embedded per article in feed pages",
             "default": 7,
             "minimum": 1
+        },
+        "hide_from_feed": {
+            "type": "boolean",
+            "description": "Exclude this page from HTML feed listings (feed template only)",
+            "default": false
+        },
+        "feed_depth": {
+            "type": "integer",
+            "description": "How many subdirectory levels below a feed page are included (also readable top-level)",
+            "default": 1,
+            "minimum": 0
         }
     },
     "additionalProperties": false
