@@ -114,6 +114,7 @@ archive-script reveals it on versioned hosts. */
     text-transform: uppercase;
     color: #ffd98c;
     cursor: default;
+    text-shadow: 1px 1px 3px #333333;
 }
 
 .archive-tag:focus-visible {

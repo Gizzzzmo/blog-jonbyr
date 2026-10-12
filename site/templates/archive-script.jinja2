@@ -5,9 +5,13 @@ runtime: a host mismatch triggers a fetch of the canonical commit endpoint
 and compares it against this build's commit (data-commit).
 - fetched commit differs (or is missing/unreachable) -> reveal the tagline;
   unreachable additionally unhides the "could not verify" note.
-- fetched commit matches -> stay hidden: this host serves the newest build.
-Scripts-disabled clients keep the tagline hidden; all version links stay
-server-rendered. Expects the .archive-wrap markup from navbar.jinja2. #}
+- fetched commit matches -> tagline stays hidden: this host serves the
+  newest build.
+- the byline <latest/> chip replaces the permalink chip on ANY host
+  mismatch, regardless of the freshness verdict above.
+Scripts-disabled clients keep the tagline hidden and the permalink chip;
+all version links stay server-rendered. Expects the .archive-wrap markup
+from navbar.jinja2. #}
 (function() {
     var wrap = document.querySelector('.archive-wrap');
     if (!wrap) { return; }
@@ -22,6 +26,19 @@ server-rendered. Expects the .archive-wrap markup from navbar.jinja2. #}
     }
     // Same host (including port) means the canonical deployment: latest.
     if (!canonicalHost || window.location.host === canonicalHost) { return; }
+    // Versioned host: the byline permalink chip (this host's URL) always
+    // yields to the <latest/> chip (canonical URL), even when the fetch
+    // below concludes this build is the newest one. Either chip may be
+    // absent (no ledger / no site_url); both loops tolerate that.
+    // Canonical hosts return above, keeping the permalink.
+    document.querySelectorAll('.article-meta a.permalink').forEach(function(a) {
+        var item = a.closest('.meta-item');
+        if (item) { item.hidden = true; }
+    });
+    document.querySelectorAll('.article-meta a.latest').forEach(function(a) {
+        var item = a.closest('.meta-item');
+        if (item) { item.hidden = false; }
+    });
     var thisEl = wrap.querySelector('.archive-this');
     var latestEl = wrap.querySelector('.archive-latest');
     var note = wrap.querySelector('.archive-note');
@@ -36,18 +53,6 @@ server-rendered. Expects the .archive-wrap markup from navbar.jinja2. #}
         if (latestEl && latestEl.textContent === '…') {
             latestEl.textContent = 'unknown';
         }
-        // Archive confirmed: the permalink chip (this version's URL)
-        // yields to the <latest/> chip (canonical URL). Either chip may
-        // be absent (no ledger / no site_url); both loops tolerate that.
-        // Canonical hosts return before show(), keeping the permalink.
-        document.querySelectorAll('.article-meta a.permalink').forEach(function(a) {
-            var item = a.closest('.meta-item');
-            if (item) { item.hidden = true; }
-        });
-        document.querySelectorAll('.article-meta a.latest').forEach(function(a) {
-            var item = a.closest('.meta-item');
-            if (item) { item.hidden = false; }
-        });
         wrap.hidden = false;
     }
     if (!commitUrl || !thisCommit) { show(true); return; }

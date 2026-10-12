@@ -107,9 +107,10 @@
                     </span>
                     {% endif %}
                     {# Permalink is the default chip; the <latest/> chip starts
-                    hidden and replaces it only when archive-script detects
-                    a versioned host (same swap as the archive tagline).
-                    No-JS clients always see the permalink. #}
+                    hidden and replaces it on any versioned host, regardless
+                    of whether the build is stale (archive-script swaps on
+                    host mismatch alone; the tagline still needs a freshness
+                    verdict). No-JS clients always see the permalink. #}
                     {% if config.permalink %}
                     <span class="meta-item"> <a class="permalink" title="Permanent link to this current version of the article" href="{{ config.permalink }}">&lt;permalink/&gt;</a></span>
                     {% endif %}
