@@ -111,19 +111,19 @@
                     a versioned host (same swap as the archive tagline).
                     No-JS clients always see the permalink. #}
                     {% if config.permalink %}
-                    <span class="meta-item"> <a class="permalink" href="{{ config.permalink }}">&lt;permalink/&gt;</a></span>
+                    <span class="meta-item"> <a class="permalink" title="Permanent link to this current version of the article" href="{{ config.permalink }}">&lt;permalink/&gt;</a></span>
                     {% endif %}
                     {% if config.latest_url %}
                     <span class="meta-item" hidden> <a class="latest" href="{{ config.latest_url }}" title="Latest version of this article">&lt;latest/&gt;</a></span>
                     {% endif %}
                     {% if config.source_version_url and config.commit and config.extra_config and config.extra_config.source_path %}
-                    <span class="meta-item"> <a class="repo-source" href="{{ config.source_version_url }}/{{ config.commit }}/{{ config.extra_config.source_path }}">&lt;source/&gt;</a></span>
+                    <span class="meta-item"> <a class="repo-source" title="Source file of this article" href="{{ config.source_version_url }}/{{ config.commit }}/{{ config.extra_config.source_path }}">&lt;source/&gt;</a></span>
                     {% endif %}
                     {% if config.export_markdown and config.exported_markdown_url %}
-                    <span class="meta-item"> <a class="md-source" href="{{ config.exported_markdown_url }}">&lt;markdown/&gt;</a></span>
+                    <span class="meta-item"> <a class="md-source" title="Article in markdown form" href="{{ config.exported_markdown_url }}">&lt;markdown/&gt;</a></span>
                     {% endif %}
                     {% if config.citation_bibtex %}
-                    <span class="meta-item"> <a class="cite-link" href="#cite">&lt;cite/&gt;</a></span>
+                    <span class="meta-item"> <a class="cite-link" title="Citable BibTeX" href="#cite">&lt;cite/&gt;</a></span>
                     {% endif %}
                 </div>
                 {% endif %}
