@@ -48,6 +48,9 @@ site:
 		--last-media-dir build-cdn/static \
 		--media-output-dir build-cdn/static \
 		-D current_year=$$(date +%Y)
+	# CORS + cache policy for the commit endpoint, consumed by the
+	# Cloudflare worker (never served as content itself).
+	printf '/__commit\n  Access-Control-Allow-Origin: *\n  Cache-Control: max-age=300\n' > build/_headers
 
 clean:
 	rm -rf build build-local build-cdn/static

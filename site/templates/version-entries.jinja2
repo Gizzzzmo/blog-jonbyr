@@ -1,0 +1,7 @@
+{# Previous article versions (changed, renderable), oldest first, excluding
+the latest change (shown as the "Updated" marker). Reads `changed_versions`
+from the including context: version_history entries with changed and url.
+Used by both the byline dropdown panel and the end-of-page list. #}
+{% for v in changed_versions[:-1] %}
+<li><time datetime="{{ v.date }}">{{ v.date | format_date }}</time> <a href="{{ v.url }}" title="{{ v.commit }}">{{ v.commit[:8] }}</a></li>
+{% endfor %}

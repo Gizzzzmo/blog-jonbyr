@@ -4,10 +4,32 @@
             {% if show_sidebar_toggle|default(false) and config.extra_config.sidebar and config.articles and config.articles|length > 0 %}
             <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">☰</button>
             {% endif %}
+            <div class="nav-brand">
             <a href="/" class="nav-logo">{{ config.site_name or 'My Blog' }}</a>
+            {# Archive marker: hidden until archive-script reveals it on
+            versioned hosts. data-commit is this build's source commit;
+            data-commit-url serves the newest built commit for comparison. #}
+            <span class="archive-wrap" hidden data-commit="{{ config.commit or '' }}" data-canonical-root="{{ config.site_url or '' }}" data-commit-url="{% if config.site_url and config.commit_file %}{{ config.site_url.rstrip('/') }}/{{ config.commit_file }}{% endif %}">
+            <span class="archive-tag" tabindex="0">archive</span>
+            <div class="archive-panel"><p>This is an older version (<code class="archive-this">…</code>) of this site.</p><p>Browse the latest version at <a class="archive-root" href="{{ config.site_url or '/' }}">…</a> (<code class="archive-latest">…</code>).<span class="archive-note" hidden> Could not verify the newest version.</span></p></div>
+            </span>
+            </div>
             <div class="nav-pages">
-                <a href="/tags.html">tags</a>
-                <a href="/about.html">about</a>
+                <span class="nav-chip"><a href="/tags.html">tags</a></span>
+                <span class="nav-chip"><a href="/about.html">about</a></span>
+            </div>
+            <div class="nav-toggle-col">
+                <span class="nav-chip"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle light/dark theme" title="Toggle light/dark theme">
+                    <span id="theme-toggle-label">dark</span>
+                </button></span>
+                {# Second chip row: canonical RSS feed. Absolute URL, so
+                versioned hosts still reach the newest feed. The filename
+                mirrors the rss: output in .config.yaml (rename one, rename
+                the other). A plain link: useful without scripts, hence
+                exempt from JS-gating. #}
+                {% if config.site_url %}
+                <span class="nav-chip"><a class="feed-link" href="{{ config.site_url.rstrip('/') }}/feed.xml" title="Latest RSS feed">rss</a></span>
+                {% endif %}
             </div>
         </div>
         {# extra_config.themes is the canonical source; top-level config.themes
@@ -16,9 +38,6 @@
         additional, hidden possibility in local-test builds (all_themes). #}
         {% set theme_list = (config.extra_config.themes if config.extra_config else none) or config.themes %}
         {% set default_theme = (config.extra_config.default_theme if config.extra_config else none) or config.default_theme or config.theme or 'dracula' %}
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light/dark theme" title="Toggle light/dark theme">
-            <span class="theme-toggle-glyph" id="theme-toggle-glyph" aria-hidden="true">&#9786;</span>
-        </button>
         {% if config.all_themes and theme_list and theme_list|length > 1 %}
         <div class="theme-selector" id="theme-selector">
             <select id="theme-select" aria-label="Select theme">

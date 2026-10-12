@@ -79,11 +79,20 @@
             "description": "Exclude this page from HTML feed listings (feed template only)",
             "default": false
         },
+        "hide_meta": {
+            "type": "boolean",
+            "description": "Hide the article byline (dates, version links) and the end-of-page version list (for static pages like about)",
+            "default": false
+        },
         "feed_depth": {
             "type": "integer",
             "description": "How many subdirectory levels below a feed page are included (also readable top-level)",
             "default": 1,
             "minimum": 0
+        },
+        "source_path": {
+            "type": "string",
+            "description": "Repo-root-relative path of this page's source file, for deep source links (e.g. site/range_constrained_types_in_c++.md)"
         }
     },
     "additionalProperties": false

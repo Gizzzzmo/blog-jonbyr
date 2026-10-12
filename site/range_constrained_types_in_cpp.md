@@ -4,16 +4,17 @@ aliases:
   - constrained types
 tags:
   - c++
+  - formal-verification
+bibtex_author: Jonas Beyer
 code:
   cpp:
-    header_link: https://github.com/Gizzzzmo/blog/tree/3b8646f1ee17dd89105165e3e57b7cd95e693f25/content/static/
-    header_link_run: https://raw.githubusercontent.com/Gizzzzmo/blog/3b8646f1ee17dd89105165e3e57b7cd95e693f25/content/static/
     run_args: "{compiler: 'armv7-clang2010', options: '-std=c++20 -O1', run: true}"
 description: Encoding preconditions in the C++ typesystem
 export_markdown: true
-number_sections: false
 extra_config:
   sidebar: false
+  source_path: site/range_constrained_types_in_c++.md
+number_sections: false
 title: Range Constrained Types in C++
 ---
 
@@ -340,22 +341,18 @@ further checks:
 safe_array<int, 100> arr;
 
 void process(InRange<size_t, 0, 100> index) {
-    std::cout 
-        << "Array at " << index 
-        << ": " << arr[index] << "\n";
+    std::cout << "Array at " << index << ": " << arr[index] << "\n";
 }
 
 int main() {
     size_t user_input;
     std::cin >> user_input;
 
-    auto index = InRange<size_t, 0, 100>
-        ::try_create(user_input);
+    auto index = InRange<size_t, 0, 100>::try_create(user_input);
     if (index) {
         process(*index);
     } else {
-        std::cerr 
-            << "Error: index out of range\n";
+        std::cerr << "Error: index out of range\n";
     }
 }
 ```

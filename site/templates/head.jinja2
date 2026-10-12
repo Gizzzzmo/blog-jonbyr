@@ -1,6 +1,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ config.title or config.id or 'Untitled' }}</title>
+{% if config.latest_url %}
+<link rel="canonical" href="{{ config.latest_url }}">
+{% endif %}
+{# JS hook: runs pre-paint so JS-gated controls (theme switch, TOC and
+sidebar toggles) never flash visible for no-JS clients, and never flash
+hidden for JS ones. Layout is visibility-based, so nothing shifts. #}
+<script>document.documentElement.classList.add('js');</script>
 <meta name="color-scheme" content="light dark">
 <link rel="stylesheet" href="/templates/technical-blog.css">
 {% set xc = config.extra_config or {} %}

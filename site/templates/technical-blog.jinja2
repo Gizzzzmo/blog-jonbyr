@@ -77,6 +77,13 @@
         <article class="article">
             <header class="article-header">
                 <h1 class="article-title" id="article-title">{{ config.title or config.id or 'Untitled' }}</h1>
+                {# Changed, renderable versions, oldest first (ledger order).
+                The latest change is the "Updated" marker; the rest feed both
+                the byline dropdown and the end-of-page list. #}
+                {% set changed_versions = config.version_history|selectattr('changed')|selectattr('url')|list if config.version_history else [] %}
+                {% set show_updated = changed_versions|length > 1 and config.publish_date and config.modified_date and config.modified_date[:10] != config.publish_date[:10] %}
+                {% set hide_meta = config.extra_config and config.extra_config.hide_meta %}
+                {% if not hide_meta %}
                 <div class="article-meta">
                     {% if config.publish_date %}
                     <time datetime="{{ config.publish_date }}">{{ config.publish_date | format_date }}</time>
@@ -84,10 +91,42 @@
                     {% if config.author %}
                     <span class="author"> {{ config.author }}</span>
                     {% endif %}
+                    {% if show_updated %}
+                    {% set latest_change = changed_versions[-1] %}
+                    {# Pure hover/focus widget, no details/summary elements: the whole
+                    trigger cluster opens the panel via :hover (mouse)
+                    and :focus-within (touch tap focuses the wrap,
+                    keyboard tabs into it); the panel is a child so
+                    moving the pointer onto it keeps :hover alive. The
+                    byline hash is plain text; the permalink chip is
+                    the canonical link. Older versions stay linked in
+                    the panel and the end-of-page list. #}
+                    <span class="version-wrap" tabindex="0">
+                    <span class="version-trigger"><span class="updated-label">Updated <time datetime="{{ config.modified_date }}">{{ config.modified_date | format_date }}</time></span> <span class="vhash" title="{{ latest_change.commit }}">{{ latest_change.commit[:8] }}</span><span class="varrow" aria-hidden="true">▾</span></span>
+                    <div class="version-panel"><h4>Previous Article Versions:</h4><ul>{% include 'version-entries.jinja2' %}</ul></div>
+                    </span>
+                    {% endif %}
+                    {# Permalink is the default chip; the <latest/> chip starts
+                    hidden and replaces it only when archive-script detects
+                    a versioned host (same swap as the archive tagline).
+                    No-JS clients always see the permalink. #}
+                    {% if config.permalink %}
+                    <span class="meta-item"> <a class="permalink" href="{{ config.permalink }}">&lt;permalink/&gt;</a></span>
+                    {% endif %}
+                    {% if config.latest_url %}
+                    <span class="meta-item" hidden> <a class="latest" href="{{ config.latest_url }}" title="Latest version of this article">&lt;latest/&gt;</a></span>
+                    {% endif %}
+                    {% if config.source_version_url and config.commit and config.extra_config and config.extra_config.source_path %}
+                    <span class="meta-item"> <a class="repo-source" href="{{ config.source_version_url }}/{{ config.commit }}/{{ config.extra_config.source_path }}">&lt;source/&gt;</a></span>
+                    {% endif %}
                     {% if config.export_markdown and config.exported_markdown_url %}
-                    <a class="md-source" href="{{ config.exported_markdown_url }}">&lt;md/&gt;</a>
+                    <span class="meta-item"> <a class="md-source" href="{{ config.exported_markdown_url }}">&lt;markdown/&gt;</a></span>
+                    {% endif %}
+                    {% if config.citation_bibtex %}
+                    <span class="meta-item"> <a class="cite-link" href="#cite">&lt;cite/&gt;</a></span>
                     {% endif %}
                 </div>
+                {% endif %}
                 {% if config.tags %}
                 <div class="article-tags">
                     {% for tag in config.tags %}
@@ -119,6 +158,26 @@
                 {{ config.bibliography_html }}
                 {% endif %}
             </div>
+            {% if (changed_versions|length > 1 or config.citation_bibtex) and not hide_meta %}
+            <hr>
+            {% endif %}
+            {% if config.citation_bibtex and not hide_meta %}
+            <section class="citation">
+                <h2 id="cite">Cite this Article</h2>
+                <div class="code-block-wrapper" data-code="{{ config.citation_bibtex | e }}">
+                    <div class="code-block-header">
+                        <button class="code-block-copy" aria-label="Copy citation">Copy</button>
+                    </div>
+                    <pre class="ts-code">{{ config.citation_bibtex | e | replace('\n', '<br>') }}</pre>
+                </div>
+            </section>
+            {% endif %}
+            {% if changed_versions|length > 1 and not hide_meta %}
+            <section class="version-history">
+                <h2 id="versions">Older Article Versions</h2>
+                <ul>{% include 'version-entries.jinja2' %}</ul>
+            </section>
+            {% endif %}
         </article>
     </main>
 
@@ -235,6 +294,7 @@
             window.open(url, '_blank');
         }
         {% include 'theme-script.jinja2' %}
+        {% include 'archive-script.jinja2' %}
 
         {% if config.enable_source_map %}
         document.addEventListener('dblclick', function(e) {
@@ -300,6 +360,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             const copyButtons = document.querySelectorAll('.code-block-copy');
             copyButtons.forEach(button => {
+                // Wired: reveal (unwired copies, e.g. on feed pages, stay hidden).
+                button.classList.add('ready');
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
                     const wrapper = this.closest('.code-block-wrapper');
@@ -337,14 +399,14 @@
                             bottom: rect.top + 30,
                             left: rect.right - 60
                         };
-                        
+
                         const isButtonClick = (
                             e.clientX >= buttonArea.left &&
                             e.clientX <= buttonArea.right &&
                             e.clientY >= buttonArea.top &&
                             e.clientY <= buttonArea.bottom
                         );
-                        
+
                         if (isButtonClick) {
                             this.classList.remove('revealed');
                         }

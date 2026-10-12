@@ -1,0 +1,64 @@
+{# Archive awareness for versioned hosts. The same HTML is served from the
+canonical host and per-commit archive hosts, so staleness is decided at
+runtime: a host mismatch triggers a fetch of the canonical commit endpoint
+(data-commit-url, emitted by the builder when commit_file is configured)
+and compares it against this build's commit (data-commit).
+- fetched commit differs (or is missing/unreachable) -> reveal the tagline;
+  unreachable additionally unhides the "could not verify" note.
+- fetched commit matches -> stay hidden: this host serves the newest build.
+Scripts-disabled clients keep the tagline hidden; all version links stay
+server-rendered. Expects the .archive-wrap markup from navbar.jinja2. #}
+(function() {
+    var wrap = document.querySelector('.archive-wrap');
+    if (!wrap) { return; }
+    var canonicalRoot = wrap.getAttribute('data-canonical-root') || '';
+    var thisCommit = (wrap.getAttribute('data-commit') || '').trim();
+    var commitUrl = wrap.getAttribute('data-commit-url') || '';
+    var canonicalHost = '';
+    try {
+        canonicalHost = new URL(canonicalRoot).host;
+    } catch (e) {
+        return;
+    }
+    // Same host (including port) means the canonical deployment: latest.
+    if (!canonicalHost || window.location.host === canonicalHost) { return; }
+    var thisEl = wrap.querySelector('.archive-this');
+    var latestEl = wrap.querySelector('.archive-latest');
+    var note = wrap.querySelector('.archive-note');
+    var rootLink = wrap.querySelector('.archive-root');
+    if (thisEl) { thisEl.textContent = thisCommit ? thisCommit.slice(0, 8) : 'unknown'; }
+    if (rootLink) {
+        rootLink.textContent = canonicalHost;
+        if (canonicalRoot) { rootLink.setAttribute('href', canonicalRoot); }
+    }
+    function show(unverified) {
+        if (note && unverified) { note.hidden = false; }
+        if (latestEl && latestEl.textContent === '…') {
+            latestEl.textContent = 'unknown';
+        }
+        // Archive confirmed: the permalink chip (this version's URL)
+        // yields to the <latest/> chip (canonical URL). Either chip may
+        // be absent (no ledger / no site_url); both loops tolerate that.
+        // Canonical hosts return before show(), keeping the permalink.
+        document.querySelectorAll('.article-meta a.permalink').forEach(function(a) {
+            var item = a.closest('.meta-item');
+            if (item) { item.hidden = true; }
+        });
+        document.querySelectorAll('.article-meta a.latest').forEach(function(a) {
+            var item = a.closest('.meta-item');
+            if (item) { item.hidden = false; }
+        });
+        wrap.hidden = false;
+    }
+    if (!commitUrl || !thisCommit) { show(true); return; }
+    fetch(commitUrl, {cache: 'no-store'}).then(function(r) {
+        if (!r.ok) { throw new Error('commit endpoint ' + r.status); }
+        return r.text();
+    }).then(function(latest) {
+        latest = (latest || '').trim();
+        if (latestEl) { latestEl.textContent = latest ? latest.slice(0, 8) : 'unknown'; }
+        // A matching commit means this host serves the newest build.
+        if (latest && latest === thisCommit) { return; }
+        show(!latest);
+    }).catch(function() { show(true); });
+})();

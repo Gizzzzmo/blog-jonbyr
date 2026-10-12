@@ -1,9 +1,10 @@
 {% if config.site_name %}
 <footer class="footer">
     <div class="footer-container">
-        {% if config.version_history %}
-        <p> {{ config.version_history[-1].commit }} @ <a href="https://blog-git.jonbyr.com">https://blog-git.jonbyr.com </a> </p>
+        {% if config.commit %}
+        <p> {{ config.commit }} @ <a href="https://blog-git.jonbyr.com">https://blog-git.jonbyr.com </a> </p>
         {% endif %}
+        <p> {{config.builder_commit}} @ builder </p>
         <p>&copy; {{ config.current_year }} {{ config.site_name }}. All rights reserved.</p>
     </div>
 </footer>

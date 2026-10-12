@@ -1,5 +1,8 @@
 markdown:
   template: ./templates/technical-blog.jinja2
+  export_frontmatter_keys:
+    - title
+    - commit
   site_name: jonbyr
   site_url: https://jonbyr.com
   source_latest_url: https://blog-git.jonbyr.com
@@ -11,6 +14,11 @@ markdown:
     - aliases
   extra_config_schema: ./templates/technical-blog-extra-config-schema.json
   media_url_template: https://cdn.jonbyr.com/static/{name}
+  # Per-version rendered pages live on full-commit subdomains (wildcard DNS).
+  version_url_template: https://{commit}-blog.jonbyr.com{path}
+  # Opt-in latest-commit endpoint: the builder writes this file carrying
+  # the built commit hash; versioned hosts fetch it to detect staleness.
+  commit_file: "__commit"
   content_assets:
     fira_code: templates/FiraCode-Regular.ttf
     saira: templates/Saira-Variable.ttf
@@ -34,5 +42,9 @@ markdown:
     light_theme: dracula-light
     dark_theme: dracula
     sidebar: false
+  code:
+    cpp:
+      header_link: https://blog-source.jonbyr.com/{commit}/site/code/
+      header_link_run: https://{commit}.blog.jonbyr.com/code/
 tag_template: ./templates/technical-blog-tags.jinja2
 rss: feed.xml

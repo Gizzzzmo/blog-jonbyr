@@ -71,10 +71,107 @@ body {
     color: var(--main-highlight, #8be9fd);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease;
+    /* Paints above the archive tagline tucked underneath (wrap sits one
+    level below the logo; the hover panel still clears page content). */
+    position: relative;
+    z-index: 61;
 }
 
 .nav-logo:hover {
     transform: scale(1.05);
+}
+
+/* Brand lockup: site name with an archive tagline tucked underneath. The
+wrap is absolutely positioned, so it never shifts the navbar geometry
+(visible or not); it sits slightly indented, overlapping the logo's
+lower edge behind the logo paint. The wrap stays hidden until
+archive-script reveals it on versioned hosts. */
+.nav-brand {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.1;
+}
+
+.archive-wrap {
+    position: absolute;
+    top: 1.2rem;
+    left: 0.6rem;
+    /* Above page content (so the hover panel clears article titles) but
+    one level below the logo the tagline tucks behind. */
+    z-index: 60;
+}
+
+.archive-wrap[hidden] {
+    display: none;
+}
+
+.archive-tag {
+    font-size: 0.7rem;
+    font-weight: 1000;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #ffd98c;
+    cursor: default;
+}
+
+.archive-tag:focus-visible {
+    outline: 1px solid var(--second-highlight, #bd93f9);
+    outline-offset: 2px;
+}
+
+/* Same hover/focus reveal pattern as the byline version panel: child
+panel plus an invisible bridge over the visual gap. */
+.archive-panel {
+    display: none;
+    position: absolute;
+    top: calc(100% + var(--spacing-sm));
+    left: 0;
+    z-index: 60;
+    width: max-content;
+    max-width: min(20rem, 80vw);
+    background: var(--background-elevated);
+    border: 1px solid var(--comment, #6272a4);
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.8rem;
+    font-weight: 400;
+    letter-spacing: normal;
+    text-transform: none;
+    text-shadow: none;
+    color: var(--foreground, #282a36);
+    line-height: 1.4;
+}
+
+.archive-panel::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    height: var(--spacing-sm);
+}
+
+.archive-wrap:hover > .archive-panel,
+.archive-wrap:focus-within > .archive-panel {
+    display: block;
+}
+
+.archive-panel p + p {
+    margin-top: var(--spacing-sm);
+}
+
+.archive-panel a {
+    color: var(--main-highlight, #ff79c6);
+}
+
+.archive-panel code {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.75rem;
+}
+
+.archive-note {
+    opacity: 0.7;
 }
 
 .nav-links {
@@ -97,23 +194,24 @@ body {
     gap: 0.5rem;
 }
 
-.nav-pages a {
+/* Chip wrapper owns the stacking context for its bar: .nav is animated
+(hence stacked), so without this the ::before bar would sink behind the
+navbar paint. The bar lives here — NOT inside the text element — because
+a negative-z-index child suppresses background-clip:text painting. */
+.nav-chip {
     position: relative;
-    /* Stacking context of its own: .nav is animated (hence stacked), so
-    without this the ::before chip would sink behind the navbar paint. */
     z-index: 0;
-    /* Same typeface as the logo (inherited body stack), a step smaller. */
-    font-size: 1rem;
-    font-weight: 700;
-    line-height: 1.2;
-    padding: 0 0.5em;
-    color: var(--background, #282a36);
-    text-decoration: none;
+    /* Popup on hover, same factor and timing as the site logo. The whole
+    chip (bar plus text) scales; transforms never shift layout. */
+    transition: transform 0.3s ease;
 }
 
-/* Slanted chip: same skewX(-30deg) as the h1/h2 underline bars, but as a
-text-safe ::before so the label itself stays horizontal and legible. */
-.nav-pages a::before {
+.nav-chip:hover {
+    transform: scale(1.05);
+}
+
+/* Slanted bar: same skewX(-30deg) as the h1/h2 underline bars. */
+.nav-chip::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -122,8 +220,48 @@ text-safe ::before so the label itself stays horizontal and legible. */
     z-index: -1;
 }
 
-.nav-pages a:hover {
-    filter: brightness(1.2);
+.nav-pages a,
+.theme-toggle,
+.feed-link {
+    /* Same typeface as the logo (inherited body stack), a step smaller. */
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
+    padding: 0 0.5em;
+    text-decoration: none;
+    /* Knockout text: a window onto the animated navbar background. Same
+    gradient, size, and animation as .nav; viewport-anchored so the
+    animated axis aligns exactly (the animation has no vertical
+    component, so the drift there is invisible on a smooth wash). */
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    background: linear-gradient(135deg, var(--background, #f8f8f2) 0%, var(--comment, #6272a4) 100%);
+    background-size: 200% 200%;
+    background-attachment: fixed;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: gradient-shift 10s ease infinite;
+}
+
+/* The switch is a button wearing the link-chip look: strip UA chrome.
+Only the family is inherited; size/weight come from the shared rule
+above (a `font` shorthand here would clobber them at equal specificity).
+No `background` reset: the shared rule's gradient IS the knockout fill. */
+.theme-toggle {
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+    /* One box for both labels: fits "light", centers "dark". */
+    min-width: 3.9em;
+    text-align: left;
+}
+
+/* Chip content is block-level: an inline button would baseline-align
+against the wrapper strut and sit ~1.6px lower than the link chips.
+Blocks share one strut, so rows line up exactly. */
+.nav-chip > a,
+.nav-chip > .theme-toggle {
+    display: block;
 }
 
 .theme-selector {
@@ -153,31 +291,36 @@ text-safe ::before so the label itself stays horizontal and legible. */
     box-shadow: 0 0 0 3px var(--main-highlight-alpha, rgba(139, 233, 253, 0.3));
 }
 
-.theme-toggle {
+/* Second chip column in .nav-left: the theme switch on top, the
+canonical-feed link underneath. */
+.nav-toggle-col {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    padding: 0;
-    font-size: 1.1rem;
-    line-height: 1;
-    border: 2px solid var(--main-highlight, #8be9fd);
-    border-radius: 4px;
-    background: var(--background, #f8f8f2);
-    color: var(--foreground, #282a36);
-    cursor: pointer;
-    transition: all 0.3s ease;
+    flex-direction: column;
+    gap: 0.5rem;
+    /* Sit closer to the tags/about column than .nav-left's gap: net 0.35rem. */
+    margin-left: calc(0.35rem - var(--spacing-md));
 }
 
-.theme-toggle:hover {
-    background: var(--background-elevated, #44475a);
-    transform: scale(1.05);
+/* JS-gated controls: server-rendered but dead without scripts. Hidden
+until the head hook adds .js to <html> (pre-paint: no flash, and
+visibility keeps the layout so nothing shifts). The toggle's wrapper
+chip is gated too: its ::before bar would otherwise survive the
+button's hiding and leave a blank bar. The feed chip is a plain link,
+useful without scripts, so it opts out of the column gating. */
+.theme-toggle,
+.nav-toggle-col > .nav-chip,
+.toc-toggle,
+.sidebar-toggle {
+    visibility: hidden;
 }
-
-.theme-toggle:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px var(--main-highlight-alpha, rgba(139, 233, 253, 0.3));
+html.js .theme-toggle,
+html.js .nav-toggle-col > .nav-chip,
+html.js .sidebar-toggle,
+html.js .toc-toggle:not(.hidden) {
+    visibility: visible;
+}
+.nav-toggle-col > .nav-chip:has(> .feed-link) {
+    visibility: visible;
 }
 
 .nav-git-links {
@@ -518,7 +661,8 @@ text-safe ::before so the label itself stays horizontal and legible. */
 
 .article-meta {
     display: flex;
-    gap: var(--spacing-md);
+    column-gap: var(--spacing-sm);
+    flex-wrap: wrap;
     color: var(--comment, #6272a4);
     font-size: 0.7rem; 
 }
@@ -528,15 +672,234 @@ text-safe ::before so the label itself stays horizontal and legible. */
     margin-right: var(--spacing-sm);
 }
 
-.article-meta .md-source {
+/* Bullet + link wrap as one unit (never stranded across lines); the
+   bullet is a plain span, never part of the anchor. */
+.article-meta .meta-item {
+    white-space: nowrap;
+}
+
+.article-meta .meta-item[hidden] {
+    display: none;
+}
+
+.article-meta .meta-item .sep {
+    margin-right: var(--spacing-sm);
+}
+
+.article-meta .md-source,
+.article-meta .permalink,
+.article-meta .latest,
+.article-meta .repo-source,
+.article-meta .cite-link {
     color: inherit;
     text-decoration: underline;
     text-decoration-thickness: 0.5px;
     text-underline-offset: 2px;
 }
 
-.article-meta .md-source:hover {
+.article-meta .md-source:hover,
+.article-meta .permalink:hover,
+.article-meta .latest:hover,
+.article-meta .repo-source:hover,
+.article-meta .cite-link:hover {
     filter: brightness(1.3);
+}
+
+/* Updated-marker with previous-versions popup. Pure hover/focus widget,
+   no details/summary elements. The whole trigger cluster (Updated +
+   date + hash + arrow) opens the panel via :hover on mouse and
+   :focus-within on touch (a tap focuses the tabindex'd wrap) and
+   keyboard — no JavaScript involved, so this works with scripts
+   disabled too. The panel is a CHILD of the wrap, so moving the
+   pointer onto it keeps :hover alive; a ::before bridge spans the
+   visual gap for the same reason. The arrow is decorative (always
+   down) and the byline hash is plain text — the permalink chip is
+   the canonical link. */
+.version-wrap {
+    position: relative;
+}
+
+.version-wrap:focus-visible {
+    outline: 1px solid var(--second-highlight, #bd93f9);
+    outline-offset: 2px;
+}
+
+.version-trigger {
+    white-space: nowrap;
+}
+
+.version-trigger::before {
+    content: "•";
+    margin-right: var(--spacing-sm);
+}
+
+.version-trigger .vhash {
+    color: inherit;
+}
+
+.version-trigger .varrow {
+    display: inline-block;
+    margin-left: 0.15rem;
+    pointer-events: none;
+}
+
+.version-panel {
+    display: none;
+    position: absolute;
+    top: calc(100% + var(--spacing-sm));
+    left: 0;
+    z-index: 50;
+    min-width: 16rem;
+    max-width: min(22rem, 80vw);
+    background: var(--background-elevated);
+    border: 1px solid var(--comment, #6272a4);
+    padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.version-panel h4 {
+    font-size: 1.2em;
+}
+
+/* Invisible hover bridge spanning the gap between trigger and panel,
+   so moving the pointer across doesn't dismiss the panel (same
+   pattern as .cite-widget::before). */
+.version-panel::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    height: var(--spacing-sm);
+}
+
+.version-wrap:hover > .version-panel,
+.version-wrap:focus-within > .version-panel {
+    display: block;
+}
+
+.version-panel ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.version-panel a {
+    color: var(--main-highlight, #ff79c6);
+}
+
+/* Always-visible version list at the end of the article (no interaction). */
+.version-history {
+    margin-top: var(--spacing-md);
+    color: var(--comment, #6272a4);
+    font-size: 0.8rem;
+}
+
+.version-history h2,
+.citation h2 {
+    color: var(--foreground, #6272a4);
+    font-size: 1rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.version-history ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.version-history a {
+    color: var(--main-highlight, #ff79c6);
+}
+
+/* Article self-citation (BibTeX). Same code-block chrome as content
+   fences: the section lives outside .article-content, so the rules are
+   mirrored here under .citation scope (the Copy wiring is document-wide
+   and needs no scoping). */
+.citation {
+    margin-top: var(--spacing-xl);
+}
+
+.citation .code-block-wrapper {
+    position: relative;
+    margin: var(--spacing-md) 0;
+}
+
+.citation .code-block-header {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    z-index: 10;
+}
+
+.citation .code-block-lang {
+    padding: 0.05rem 0.3rem;
+    background: var(--third-highlight, #bd93f9);
+    color: var(--background, #282a36);
+    border-radius: 0;
+    border: none;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-decoration: none;
+    opacity: 0.3;
+    transition: opacity 0.2s;
+    transform: skewX(-5deg);
+}
+
+.citation .code-block-lang:hover {
+    opacity: 1;
+}
+
+.citation .code-block-copy {
+    padding: 0.12rem 0.3rem;
+    background: var(--background, #8be9fd);
+    color: var(--foreground-dim, #282a36);
+    border: none;
+    border-radius: 0;
+    font-size: 0.65rem;
+    font-weight: 600;
+    cursor: pointer;
+    opacity: 0.3;
+    transition: opacity 0.2s;
+    transform: skewX(-5deg);
+    /* Same JS-gating as content copies: hidden until the wiring code
+    reveals it, so no-JS readers just see the text. */
+    display: none;
+}
+
+.citation .code-block-copy.ready {
+    display: inline-block;
+}
+
+.citation .code-block-copy:hover {
+    opacity: 1;
+}
+
+@media (hover: none) {
+    .citation .code-block-copy {
+        opacity: 1;
+        padding: 0.3rem 0.6rem;
+    }
+}
+
+.citation .code-block-wrapper pre {
+    margin: 0;
+    padding: var(--spacing-md);
+    border-radius: 0;
+    white-space: pre-wrap;
+    font-family: 'Fira Code', monospace;
+    color: var(--comment);
+    font-size: 0.7rem;
+    font-style: normal;
+    position: relative;
 }
 
 .article-tags {
@@ -649,7 +1012,7 @@ text-safe ::before so the label itself stays horizontal and legible. */
 .article-content a {
     color: var(--main-highlight, #ff79c6);
     text-decoration: none;
-    border-bottom: 0.2rem solid transparent;
+    border-bottom: 0.1rem solid transparent;
     transition: border-color 0.3s;
 }
 
@@ -854,23 +1217,29 @@ a.tag:hover {
     padding-left: 0.4rem;
     padding-right: 0.4rem;
     padding-bottom: 0.4rem;
-    cursor: pointer;
     box-shadow: inset 0 0 20px var(--background-elevated);
 }
 
-.article-content .spoiler > * {
+/* Spoiler hiding is JS-gated: without scripts the content stays
+readable and the Show button never renders. Everything below only
+applies once the head hook has added .js to <html>. */
+html.js .article-content .spoiler {
+    cursor: pointer;
+}
+
+html.js .article-content .spoiler > * {
     filter: blur(12px);
     user-select: none;
     pointer-events: none;
     transition: filter 0.3s ease;
 }
 
-.article-content .spoiler::before {
+html.js .article-content .spoiler::before {
     content: "Show";
     position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    padding: 0.15rem 0.4rem;
+    top: 0.5em;
+    right: 0.5em;
+    padding: 0.15em 0.4em;
     background: var(--main-highlight, #ff79c6);
     color: var(--background, #282a36);
     border: none;
@@ -885,21 +1254,21 @@ a.tag:hover {
     pointer-events: auto;
 }
 
-.article-content .spoiler:hover::before {
+html.js .article-content .spoiler:hover::before {
     opacity: 1;
 }
 
-.article-content .spoiler.revealed {
+html.js .article-content .spoiler.revealed {
     cursor: default;
 }
 
-.article-content .spoiler.revealed > * {
+html.js .article-content .spoiler.revealed > * {
     filter: blur(0);
     user-select: auto;
     pointer-events: auto;
 }
 
-.article-content .spoiler.revealed::before {
+html.js .article-content .spoiler.revealed::before {
     content: "Hide";
     pointer-events: auto;
 }
@@ -1052,7 +1421,7 @@ a.tag:hover {
 }
 
 .article-content .code-block-copy {
-    padding: 0.15rem 0.4rem;
+    padding: 0.12rem 0.3rem;
     background: var(--background, #8be9fd);
     color: var(--foreground-dim, #282a36);
     border: none;
@@ -1063,6 +1432,15 @@ a.tag:hover {
     opacity: 0.3;
     transition: opacity 0.2s;
     transform: skewX(-5deg);
+    /* JS-gated like the nav toggles, but revealed by the wiring code
+    itself (not html.js): only wired buttons appear. Unwired slots
+    collapse entirely (display, not visibility) so the lang chip sits
+    flush right with zero gap. */
+    display: none;
+}
+
+.article-content .code-block-copy.ready {
+    display: inline-block;
 }
 
 .article-content .code-block-copy:hover {
@@ -1095,6 +1473,152 @@ a.tag:hover {
     padding: 0;
     border-radius: 0;
     font-size: 1em;
+}
+
+/* Bibliography and Citations */
+.article-content .citation {
+    color: var(--main-highlight, #ff79c6);
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.1s;
+    display: inline-block;
+}
+
+.article-content .citation:hover {
+    color: var(--second-highlight, #ff7ac6de);
+    transform: translateY(-1px);
+}
+
+/* Citation links signal hover via the lift above; suppress the generic
+   link underline so they don't double-signal. */
+.article-content .citation a:hover {
+    border-bottom-color: transparent;
+}
+
+.article-content #refs {
+    margin-top: var(--spacing-sm);
+    position: relative;
+}
+
+.article-content .csl-entry {
+    margin-bottom: var(--spacing-md);
+    padding-left: var(--spacing-lg);
+    text-indent: calc(-1 * var(--spacing-lg));
+    line-height: 1.6;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.article-content .csl-entry .csl-left-margin {
+    flex-shrink: 0;
+    font-weight: 600;
+    color: var(--main-highlight, #ff79c6);
+}
+
+.article-content .csl-entry .csl-right-inline {
+    flex: 1;
+    text-indent: 0;
+}
+
+.article-content .csl-entry:hover {
+    background: rgba(189, 147, 249, 0.08);
+    padding-left: calc(var(--spacing-lg) + 0.5rem);
+    margin-left: -0.5rem;
+}
+
+.article-content .csl-entry:target {
+    background: rgba(255, 121, 198, 0.15);
+    padding-left: calc(var(--spacing-lg) + 0.5rem);
+    margin-left: -0.5rem;
+    border-left: 4px solid var(--main-highlight, #ff79c6);
+}
+
+.article-content .csl-entry .csl-left-margin a {
+    color: inherit;
+    border-bottom: 0 solid transparent;
+}
+
+.article-content .csl-entry .csl-left-margin a:hover {
+    border-bottom-color: transparent;
+}
+
+.cite-widget {
+    position: fixed;
+    z-index: 1200;
+    max-width: 26rem;
+    background: var(--background, #f8f8f2);
+    color: var(--foreground, #282a36);
+    border: 1px solid var(--comment, #6272a4);
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3);
+    padding: var(--spacing-md);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.cite-widget[hidden] {
+    display: none;
+}
+
+/* Invisible hover bridge spanning the gap between citation and widget,
+   so moving the pointer across doesn't dismiss the widget. */
+.cite-widget::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 10px;
+    top: 100%;
+}
+
+.cite-widget-below::before {
+    top: auto;
+    bottom: 100%;
+}
+
+.cite-widget-entry {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.cite-widget-entry + .cite-widget-entry {
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--comment, #6272a4);
+}
+
+.cite-widget-index {
+    flex-shrink: 0;
+    font-weight: 600;
+    color: var(--main-highlight, #ff79c6);
+}
+
+.cite-widget-text {
+    flex: 1;
+}
+
+.cite-widget a {
+    color: var(--main-highlight, #ff79c6);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s;
+}
+
+.cite-widget a:hover {
+    border-bottom-color: var(--second-highlight, #ff7ac6de);
+}
+
+.article-content .csl-entry a {
+    color: var(--main-highlight, #ff79c6);
+    border-bottom-width: 1px;
+}
+
+.article-content .references.csl-bib-body {
+    font-size: 1rem;
+}
+.article-content pre.ts-code {
+    padding-top: var(--spacing-md);
 }
 
 @media (max-width: 1080px) {
@@ -1268,6 +1792,9 @@ a.tag:hover {
         z-index: 10;
         background: var(--background);
     }
+    .article-content pre code, .article-content pre.ts-code {
+        font-size: 0.75rem;
+    }
 }
 
 @media (min-width: 1281px) {
@@ -1290,7 +1817,7 @@ a.tag:hover {
 
 @media (max-width: 768px) {
     .article {
-        margin-right: 2rem;
+        margin-right: 3vw;
     }
     .article-content {
         font-size: 1.2rem;
@@ -1313,17 +1840,38 @@ a.tag:hover {
         position: relative;
         margin-right: 0.5rem;
     }
+
     .article-content th {
         font-size: 0.65rem;
         padding: var(--spacing-sm) var(--spacing-sm);
     }
+
     .article-content td {
         font-size: 0.65rem;
         padding: var(--spacing-sm) var(--spacing-sm);
     }
+
     .article-content pre code, .article-content pre.ts-code {
-        font-size: 0.55rem;
+        font-size: min(0.65rem, 1.7vw);
         padding: var(--spacing-sm) var(--spacing-sm);
+    }
+
+    .article-content .code-block-lang {
+        margin-top: -0.3rem;
+        margin-right: -0.2rem;
+        padding: 0.2vw 1vw;
+        font-size: min(2vw, 0.65rem);
+    }
+
+    .code-block-wrapper .code-block-copy {
+        margin-top: -0.3rem;
+        margin-right: -0.2rem;
+        padding: 0.4vw 1vw;
+        font-size: min(2vw, 0.65rem);
+    }
+
+    html.js .article-content .spoiler::before {
+        font-size: min(2vw, 0.65rem);
     }
 }
 
@@ -1357,7 +1905,7 @@ a.tag:hover {
         font-size: 2.3vw;
     }
     .article-content pre code, .article-content pre.ts-code {
-        font-size: 2vw;
+        font-size: 1.8vw;
     }
     .toc-list a {
         font-size: 5vw;
@@ -1366,150 +1914,8 @@ a.tag:hover {
         padding-left: 2vw;
         padding-right: 2vw;
     }
+    .citation .code-block-wrapper pre {
+        font-size: 1.8vw;
+    }
 }
 
-/* Bibliography and Citations */
-.article-content .citation {
-    color: var(--main-highlight, #ff79c6);
-    font-weight: 500;
-    cursor: pointer;
-    transition: color 0.2s, transform 0.1s;
-    display: inline-block;
-}
-
-.article-content .citation:hover {
-    color: var(--second-highlight, #ff7ac6de);
-    transform: translateY(-1px);
-}
-
-/* Citation links signal hover via the lift above; suppress the generic
-   link underline so they don't double-signal. */
-.article-content .citation a:hover {
-    border-bottom-color: transparent;
-}
-
-.article-content #refs {
-    margin-top: var(--spacing-sm);
-    position: relative;
-}
-
-.article-content .csl-entry {
-    margin-bottom: var(--spacing-md);
-    padding-left: var(--spacing-lg);
-    text-indent: calc(-1 * var(--spacing-lg));
-    line-height: 1.6;
-    font-size: 0.95rem;
-    transition: background 0.2s;
-    display: flex;
-    gap: 0.5rem;
-}
-
-.article-content .csl-entry .csl-left-margin {
-    flex-shrink: 0;
-    font-weight: 600;
-    color: var(--main-highlight, #ff79c6);
-}
-
-.article-content .csl-entry .csl-right-inline {
-    flex: 1;
-    text-indent: 0;
-}
-
-.article-content .csl-entry:hover {
-    background: rgba(189, 147, 249, 0.08);
-    padding-left: calc(var(--spacing-lg) + 0.5rem);
-    margin-left: -0.5rem;
-}
-
-.article-content .csl-entry:target {
-    background: rgba(255, 121, 198, 0.15);
-    padding-left: calc(var(--spacing-lg) + 0.5rem);
-    margin-left: -0.5rem;
-    border-left: 4px solid var(--main-highlight, #ff79c6);
-}
-
-.article-content .csl-entry .csl-left-margin a {
-    color: inherit;
-    border-bottom: 0 solid transparent;
-}
-
-.article-content .csl-entry .csl-left-margin a:hover {
-    border-bottom-color: transparent;
-}
-
-.cite-widget {
-    position: fixed;
-    z-index: 1200;
-    max-width: 26rem;
-    background: var(--background, #f8f8f2);
-    color: var(--foreground, #282a36);
-    border: 1px solid var(--comment, #6272a4);
-    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3);
-    padding: var(--spacing-md);
-    font-size: 0.95rem;
-    line-height: 1.6;
-}
-
-.cite-widget[hidden] {
-    display: none;
-}
-
-/* Invisible hover bridge spanning the gap between citation and widget,
-   so moving the pointer across doesn't dismiss the widget. */
-.cite-widget::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 10px;
-    top: 100%;
-}
-
-.cite-widget-below::before {
-    top: auto;
-    bottom: 100%;
-}
-
-.cite-widget-entry {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.cite-widget-entry + .cite-widget-entry {
-    margin-top: var(--spacing-sm);
-    padding-top: var(--spacing-sm);
-    border-top: 1px solid var(--comment, #6272a4);
-}
-
-.cite-widget-index {
-    flex-shrink: 0;
-    font-weight: 600;
-    color: var(--main-highlight, #ff79c6);
-}
-
-.cite-widget-text {
-    flex: 1;
-}
-
-.cite-widget a {
-    color: var(--main-highlight, #ff79c6);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.3s;
-}
-
-.cite-widget a:hover {
-    border-bottom-color: var(--second-highlight, #ff7ac6de);
-}
-
-.article-content .csl-entry a {
-    color: var(--main-highlight, #ff79c6);
-    border-bottom-width: 1px;
-}
-
-.article-content .references.csl-bib-body {
-    font-size: 1rem;
-}
-.article-content pre.ts-code {
-    padding-top: var(--spacing-md);
-}

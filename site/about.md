@@ -1,11 +1,13 @@
 ---
 id: about
-title: About
 aliases: []
 tags: []
-ignore_rss: true
 extra_config:
   hide_from_feed: true
+  hide_meta: true
+  source_path: site/about.md
+ignore_rss: true
+title: About
 ---
 
 Hey there 👋 welcome to my blog.

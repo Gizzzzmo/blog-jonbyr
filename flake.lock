@@ -6,11 +6,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1791668332,
-        "narHash": "sha256-LVQ7DKrz1d0xeZw9Qx+sG9AVETk/un5aJnmrEBBZrdU=",
+        "lastModified": 1791828687,
+        "narHash": "sha256-+zmLvfnD55CnnTjQP9bYe2O310JUtr2LtQGtSN0BaTk=",
         "ref": "refs/heads/main",
-        "rev": "0577a669441c9ab5ce8a4420da666b225f5b08a6",
-        "revCount": 30,
+        "rev": "8e00c1e93815d62d630119e2ee38130b484dabc1",
+        "revCount": 34,
         "type": "git",
         "url": "ssh://git@github.com/Gizzzzmo/website.git"
       },
