@@ -81,7 +81,7 @@
                 The latest change is the "Updated" marker; the rest feed both
                 the byline dropdown and the end-of-page list. #}
                 {% set changed_versions = config.version_history|selectattr('changed')|selectattr('url')|list if config.version_history else [] %}
-                {% set show_updated = changed_versions|length > 1 and config.publish_date and config.modified_date and config.modified_date[:10] != config.publish_date[:10] %}
+                {% set show_updated = changed_versions|length > 1 and config.publish_date and config.modified_date and config.modified_date != config.publish_date %}
                 {% set hide_meta = config.extra_config and config.extra_config.hide_meta %}
                 {% if not hide_meta %}
                 <div class="article-meta">
