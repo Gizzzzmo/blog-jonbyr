@@ -3,17 +3,16 @@ id: range-constrained-cpp
 aliases:
   - constrained types
 tags:
-  - c++
+  - C++
   - formal-verification
-bibtex_author: Jonas Beyer
 code:
   cpp:
     run_args: "{compiler: 'armv7-clang2010', options: '-std=c++20 -O1', run: true}"
-description: Encoding preconditions in the C++ typesystem
+description: Encoding preconditions about integers in the C++ typesystem
 export_markdown: true
 extra_config:
   sidebar: false
-  source_path: site/range_constrained_types_in_c++.md
+  source_path: site/range_constrained_types_in_cpp.md
 number_sections: false
 title: Range Constrained Types in C++
 ---
@@ -32,8 +31,6 @@ int main() {
     return foo(5);
 }
 ```
-
-A dummy paragraph to verify modified version.
 
 The code above causes
 [🌩*Undefined Behavior*🌩](https://blog.regehr.org/archives/213)<sup>TM</sup> (or
