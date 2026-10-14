@@ -19,6 +19,7 @@ markdown:
   # Opt-in latest-commit endpoint: the builder writes this file carrying
   # the built commit hash; versioned hosts fetch it to detect staleness.
   commit_file: "__commit"
+  bibtex_author: Jonas Beyer
   content_assets:
     fira_code: templates/FiraCode-Regular.ttf
     saira: templates/Saira-Variable.ttf
