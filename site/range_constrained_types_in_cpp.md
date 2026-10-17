@@ -183,7 +183,7 @@ operator T() {
 The code below will now compile:
 
 ```cpp
-#include "in_range_naive.h"
+#include "range_constrained_cpp/in_range_naive.h"
 
 safe_array<int, 5> arr;
 
